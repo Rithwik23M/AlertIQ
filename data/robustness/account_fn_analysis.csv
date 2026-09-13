@@ -1,0 +1,7 @@
+,account_id,total_sars,false_negatives,fn_rate,mean_score_on_sars,min_score_on_sars,window_label
+0,ACC000138,12,1,0.0833,0.578,0.0427,Window-1
+1,ACC000014,10,4,0.4,0.3291,0.0244,Window-2
+2,ACC000079,40,1,0.025,0.8011,0.1872,Window-2
+3,ACC000287,80,32,0.4,0.4079,0.1552,Window-3
+4,ACC000083,86,3,0.0349,0.4722,0.2274,Window-3
+5,ACC000138,5,1,0.2,0.6176,0.1974,Window-3
