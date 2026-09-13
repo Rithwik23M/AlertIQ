@@ -1,0 +1,24 @@
+{
+  "versions": [
+    {
+      "model_version": "1.0.0",
+      "artifact_path": "1.0.0/model.joblib",
+      "trained_at": "2026-09-13T12:39:23.882795+00:00",
+      "training_rows": 44956,
+      "schema_version": 1,
+      "notes": "Trained on 44956 rows (train+val)",
+      "registered_at": "2026-09-13T12:39:23.882816+00:00",
+      "is_champion": false
+    },
+    {
+      "model_version": "1.0.1",
+      "artifact_path": "1.0.1\\model.joblib",
+      "trained_at": "2026-09-13T17:38:48.813972+00:00",
+      "training_rows": 44716,
+      "schema_version": 1,
+      "notes": "Trained on 44716 rows (train+val)",
+      "registered_at": "2026-09-13T17:38:48.813985+00:00",
+      "is_champion": true
+    }
+  ]
+}

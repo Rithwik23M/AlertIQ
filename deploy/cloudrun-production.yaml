@@ -1,0 +1,222 @@
+# ============================================================================ #
+# AlertIQ — Cloud Run Service Definition (Production)
+# ============================================================================ #
+#
+# Declarative IaC for the AlertIQ API production service.
+# Deploy with:
+#
+#   gcloud run services replace deploy/cloudrun-production.yaml \
+#     --region europe-west1 \
+#     --project <GCP_PROJECT_ID>
+#
+# Production deployment is a deliberate manual step (not wired into the CD
+# workflow automatically).  The recommended flow is:
+#
+#   1. Staging smoke tests pass (automatic via CD pipeline).
+#   2. Engineer inspects staging metrics and audit logs.
+#   3. Engineer runs:
+#        python scripts/smoke_test.py --base-url <STAGING_URL>
+#   4. Engineer promotes to production:
+#        PROD_IMAGE=$(gcloud run services describe alertiq-api-staging \
+#          --region europe-west1 --format='value(spec.template.spec.containers[0].image)')
+#        PROD_SHA=$(gcloud run services describe alertiq-api-staging \
+#          --region europe-west1 --format='value(spec.template.metadata.annotations[run.googleapis.com/client-version])')
+#        PROD_DIGEST=$(gcloud run services describe alertiq-api-staging \
+#          --region europe-west1 \
+#          --format='value(spec.template.spec.containers[0].image)' | \
+#          xargs gcloud artifacts docker images describe --format='value(image_summary.digest)')
+#        sed \
+#          -e "s|IMAGE_TAG_PLACEHOLDER|${PROD_IMAGE}|g" \
+#          -e "s|GIT_SHA_PLACEHOLDER|${PROD_SHA}|g" \
+#          -e "s|DIGEST_PLACEHOLDER|${PROD_DIGEST}|g" \
+#          deploy/cloudrun-production.yaml > /tmp/prod-deploy.yaml
+#        gcloud run services replace /tmp/prod-deploy.yaml \
+#          --region europe-west1 \
+#          --project <GCP_PROJECT_ID>
+#
+# See docs/DEPLOYMENT.md for the full promotion procedure and rollback steps.
+#
+# ── Billing model ───────────────────────────────────────────────────────── #
+#
+# Production (and staging) use REQUEST-BASED billing:
+#   • minScale: "0"                  — scale to zero when idle
+#   • cpu-throttling: "true"         — CPU allocated only during request
+#
+# This means the first request after idle incurs a COLD START: ~3–10 s while
+# the container launches and the LightGBM artifact (~1–3 s) loads.
+#
+# Trade-off table:
+#   Policy               Cost at idle    Cold-start penalty
+#   ─────────────────────────────────────────────────────────
+#   Request-based (↑)    ~$0/month       ~3–10 s (first req)
+#   Instance-based        ~$5–10/month   Zero
+#
+# For a portfolio deployment receiving occasional traffic, request-based
+# billing eliminates unnecessary idle spend while keeping the p99 for the
+# first request within the 30 s timeout.  If this system were deployed to a
+# regulated financial institution with SLOs on cold-start p99, the trade-off
+# should be revisited (minScale ≥ 1 is a one-line change).
+#
+# Cloud Run free tier (per month, per project):
+#   180,000 vCPU-seconds, 360,000 GiB-seconds, 2,000,000 requests.
+# Expected cost at portfolio traffic volumes: $0 within free tier.
+#
+# ── Cost safeguards ─────────────────────────────────────────────────────── #
+#
+# maxScale: "10" caps parallel container instances.  This is a SOFT limit:
+# Cloud Run enforces it against autoscaling, but it is not a billing budget.
+# To prevent unexpected charges, create a GCP Budget Alert in Cloud Billing:
+#
+#   Billing → Budgets & alerts → Create budget
+#   Recommended threshold: $10/month with e-mail notification.
+#
+# Budget alerts notify; they do NOT hard-stop spending automatically.
+# A hard cap requires a custom Cloud Function to disable the service.
+# See docs/DEPLOYMENT.md §Cost Safeguards for full guidance.
+#
+# ── Region ──────────────────────────────────────────────────────────────── #
+#
+# europe-west1 (St. Ghislain, Belgium).
+# Selected because:
+#   - Sub-20 ms latency to Dublin (primary users)
+#   - EU infrastructure — data stays within the EU at the Cloud Run layer
+#   - GCP carbon-neutral since 2007 in this region
+#   - One of the most cost-effective European GCP regions
+#
+# IMPORTANT — compliance note:
+#   EU region alone does NOT establish GDPR compliance, a Data Processing
+#   Agreement, or any banking/AML regulatory compliance.  Consult legal
+#   counsel before processing real financial or personal data in any
+#   environment.
+#
+# ============================================================================ #
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: alertiq-api-production
+  labels:
+    app: alertiq
+    tier: production
+    managed-by: manual-promotion
+  annotations:
+    run.googleapis.com/description: "AlertIQ AML triage API — production environment"
+
+spec:
+  template:
+    metadata:
+      annotations:
+        # ── Autoscaling ─────────────────────────────────────────────── #
+        # Production: scale-to-zero (request-based billing).
+        # Cold-start penalty: ~3–10 s after idle.  See billing model note
+        # in the file header for the cost vs. latency trade-off.
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "10"
+
+        # ── CPU policy ──────────────────────────────────────────────── #
+        # CPU allocated only during request processing (request-based billing).
+        run.googleapis.com/cpu-throttling: "true"
+
+        # ── Startup boost ───────────────────────────────────────────── #
+        # Cloud Run temporarily allocates extra CPU during startup to shorten
+        # the cold-start model load (baked-in joblib artifact, ~1–3 s).
+        run.googleapis.com/startup-cpu-boost: "true"
+
+    spec:
+      # Production: 8 concurrent requests per instance.
+      # LightGBM inference is stateless; multiple simultaneous requests are
+      # safe.  Higher concurrency than staging reduces cold-start frequency
+      # under burst traffic.
+      containerConcurrency: 8
+
+      # Cloud Run terminates a request after this many seconds.
+      # Batch scoring of up to 200 alerts should complete well within 30 s.
+      timeoutSeconds: 30
+
+      containers:
+        - image: IMAGE_TAG_PLACEHOLDER
+
+          # ── Port ──────────────────────────────────────────────────── #
+          ports:
+            - name: http1
+              containerPort: 8080
+
+          # ── Resource allocation ───────────────────────────────────── #
+          # Production: 1 CPU / 512 Mi — same as staging.
+          # LightGBM inference is single-threaded per request; a second vCPU
+          # adds no throughput and doubles compute cost.  Horizontal scaling
+          # (maxScale: "10") handles burst traffic.
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+
+          # ── Runtime environment ───────────────────────────────────── #
+          env:
+            - name: ALERTIQ_ENV
+              value: production
+
+            - name: ALERTIQ_LOG_LEVEL
+              value: WARNING
+
+            # Audit log: empty string → Python logging (structured stdout,
+            # ingested by Cloud Logging).  See docs/OPERATIONS_RUNBOOK.md
+            # §Audit Durability for the durability classification and the
+            # upgrade path for regulated production deployments.
+            - name: ALERTIQ_AUDIT_LOG_PATH
+              value: ""
+
+            # Model registry path inside the container (baked in by the image).
+            - name: ALERTIQ_REGISTRY_PATH
+              value: /app/model_registry
+
+            # Uvicorn worker count: 1 per container because Cloud Run handles
+            # horizontal scaling; multiple workers per container would conflict
+            # with the containerConcurrency limit.
+            - name: ALERTIQ_WORKERS
+              value: "1"
+
+            # ── Deployment traceability ─────────────────────────────── #
+            # Injected by the promotion script at deploy time; exposed via
+            # GET /health and in structured logs for every scored request.
+            - name: ALERTIQ_GIT_SHA
+              value: GIT_SHA_PLACEHOLDER
+
+            - name: ALERTIQ_IMAGE_DIGEST
+              value: DIGEST_PLACEHOLDER
+
+          # ── Liveness probe ────────────────────────────────────────── #
+          # Liveness: is the process alive?
+          # A failure here causes Cloud Run to restart the container.
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
+
+          # ── Startup probe ─────────────────────────────────────────── #
+          # Startup probe: give the cold-start model load time to complete.
+          # Cloud Run will not route traffic until this succeeds.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12    # 5 + 12×5 = 65 s maximum wait
+            timeoutSeconds: 5
+
+  # ── Traffic routing ──────────────────────────────────────────────────── #
+  # 100 % of traffic goes to the latest revision automatically.
+  # After confirming a new revision is healthy, promote with:
+  #
+  #   gcloud run services update-traffic alertiq-api-production \
+  #     --to-latest \
+  #     --region europe-west1
+  #
+  traffic:
+    - percent: 100
+      latestRevision: true

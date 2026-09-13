@@ -1,0 +1,11 @@
+trigger_id,severity,metric,condition,threshold,reference_metric,action,description
+T01,P0,recall_at_20pct,lt,0.4,,Halt deployment. Model cannot meet minimum recall requirement.,Recall@20% fell below the absolute minimum acceptable floor.
+T02,P0,auc_roc,lt,0.65,,Halt deployment. Ranking ability is near-random.,AUC-ROC below 0.65 indicates severe ranking failure.
+T03,P1,recall_at_20pct,lt,0.5,,Escalate to model risk team. Review feature pipeline and label quality.,Recall@20% is below operational target — immediate investigation required.
+T04,P1,auc_roc,lt,0.7,,Escalate to model risk team. Review score distribution and model staleness.,AUC-ROC below 0.70 indicates significant ranking degradation.
+T05,P1,ece,gt,0.05,,Escalate. Apply Platt or isotonic calibration on recent validation data.,Expected Calibration Error ≥ 0.05 means probabilities are misleading.
+T06,P1,max_feature_psi,gt,0.25,,Escalate. Identify shifted features; assess whether retraining is required.,PSI ≥ 0.25 on at least one feature indicates significant distribution shift.
+T07,P2,recall_at_20pct,abs_delta_gt,0.08,prev_recall_at_20pct,Investigate. Monitor for continued trend; consider partial retraining.,Recall@20% drifted >0.08 from previous monitoring period.
+T08,P2,cls_threshold,abs_delta_gt,0.1,prev_cls_threshold,Investigate. Threshold instability may indicate score distribution shift.,Classification threshold shifted >0.10 since last window.
+T09,P2,test_sar_rate,abs_delta_gt,0.03,baseline_sar_rate,Investigate. Alert label shift may indicate process or regulatory change.,SAR rate drifted >3 percentage points from baseline.
+T10,P2,auc_roc,abs_delta_gt,0.05,prev_auc_roc,Investigate. Monitor score quality; consider feature monitoring expansion.,AUC-ROC drifted >0.05 from previous monitoring period.

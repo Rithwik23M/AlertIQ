@@ -1,0 +1,7 @@
+,scenario_id,scenario_name,window_label,baseline_auc_roc,baseline_recall_at_20,baseline_n,baseline_n_sars,perturbed_auc_roc,perturbed_recall_at_20,perturbed_n,perturbed_n_sars,delta_auc_roc,delta_recall_at_20,skipped,skip_reason,auc_degraded,recall_degraded
+0,S01,Volume surge (×3),Window-3,0.9806453556888794,1.0,8730,832,0.980303938314471,1.0,8730,832,-0.0003414173744084037,0.0,False,,False,False
+1,S02,New jurisdiction (score=0.9),Window-3,0.9806453556888794,1.0,8730,832,0.9804634997662505,1.0,8730,832,-0.00018185592262898176,0.0,False,,False,False
+2,S03,Missing features (30 pct zeroed),Window-3,0.9806453556888794,1.0,8730,832,0.9467552490163041,0.9074519230769231,8730,832,-0.033890106672575304,-0.09254807692307687,False,,False,False
+3,S04,Rule shift (R08 removed),Window-3,0.9806453556888794,1.0,8730,832,0.9531931531221303,0.4681818181818182,1716,660,-0.027452202566749184,-0.5318181818181817,False,,False,True
+4,S05,Novel typology (R08 + volume + jurisdiction),Window-3,0.9806453556888794,1.0,8730,832,0.8923068769201,0.21214490487359916,8730,7674,-0.08833847876877943,-0.7878550951264008,False,,True,True
+5,S06,SAR rate collapse (1 pct SARs retained),Window-3,0.9806453556888794,1.0,8730,832,0.987156558622436,1.0,7906,8,0.006511202933556559,0.0,False,,False,False

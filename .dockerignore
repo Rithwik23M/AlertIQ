@@ -1,0 +1,61 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments / package manager caches
+.venv/
+venv/
+env/
+.env
+.uv/
+.pip/
+
+# Test artefacts
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.lcov
+
+# Type-checker / linter caches
+.mypy_cache/
+.ruff_cache/
+
+# Local dev / editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+Thumbs.db
+
+# Docs build output
+docs/_build/
+site/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Sensitive / local secrets
+.env.local
+secrets/
+*.key
+*.pem
+
+# Model artifacts and registry (bind-mounted at runtime)
+models/
+data/simulation/
+
+# Git history (not needed in the image)
+.git/
+.gitignore
+.gitattributes
+
+# CI / GitHub metadata
+.github/
+
+# Development-only scripts output
+scripts/reports/

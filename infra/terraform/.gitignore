@@ -1,0 +1,16 @@
+# Terraform working directory — never commit.
+.terraform/
+
+# Local state files — never commit (use a remote GCS backend for shared state).
+terraform.tfstate
+terraform.tfstate.backup
+
+# Plan files — contain sensitive outputs, never commit.
+*.tfplan
+
+# Variable files — may contain project IDs or secrets; create locally, never commit.
+*.tfvars
+*.tfvars.json
+
+# The dependency lock file is committed for reproducible provider versions.
+# Do NOT add .terraform.lock.hcl here.

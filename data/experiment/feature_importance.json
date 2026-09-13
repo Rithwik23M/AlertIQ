@@ -1,0 +1,29 @@
+{
+  "mdi": {},
+  "permutation": {
+    "f11_cash_fraction_30d": 0.00763675806029116,
+    "f02_vol_30d_log": 0.0045051052443629835,
+    "f07_txn_count_30d": 0.003811938356832867,
+    "f04_max_txn_log": 0.0022117084106920036,
+    "f10_account_age_days": 0.0018698355907659225,
+    "f05_vol_vs_revenue": 0.0016777060747490858,
+    "f16_intl_fraction_30d": 0.0013568477144637158,
+    "f19_shell_counterparty_fraction": 0.00023948021791859732,
+    "f09_recency_gap_days": 0.0,
+    "f15_night_fraction_30d": 0.0,
+    "f01_vol_7d_log": -1.5438811064805158e-05,
+    "f21_adverse_media_flag": -4.91371660322315e-05,
+    "f20_pep_flag": -5.121510588930178e-05,
+    "f17_distinct_jurisdictions_30d": -7.238000461469163e-05,
+    "f22_high_risk_industry": -0.00016981751927076517,
+    "f03_vol_ratio_7_30": -0.00026688833865793347,
+    "f08_velocity_ratio": -0.00031203886894626276,
+    "f14_digital_channel_fraction": -0.0004957814059923127,
+    "f24_account_jurisdiction_score": -0.0010845905809711899,
+    "f06_txn_count_7d": -0.0013041752299413957,
+    "f18_very_high_jur_flag": -0.001411203236245484,
+    "f13_round_amount_count_30d": -0.003118856091287836,
+    "f12_structuring_count_30d": -0.007235847302072362,
+    "f23_prior_alerts_90d": -0.010483798932897881
+  }
+}

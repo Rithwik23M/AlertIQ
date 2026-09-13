@@ -1,0 +1,664 @@
+{
+  "experiment": {
+    "seed": 42,
+    "alerts_csv": "data/simulation/alerts.csv",
+    "split": {
+      "train_frac": 0.6,
+      "val_frac": 0.2,
+      "holdout_frac": 0.2,
+      "train_end": "2023-04-15",
+      "val_end": "2023-05-23",
+      "train_alerts": 33732,
+      "val_alerts": 11344,
+      "holdout_alerts": 11119
+    },
+    "model": {
+      "name": "HistGradientBoostingClassifier",
+      "best_iter_phase1": 145,
+      "selected_threshold": 0.11530119167368708,
+      "hyperparams": {
+        "max_iter": 400,
+        "learning_rate": 0.05,
+        "max_leaf_nodes": 31,
+        "max_depth": 6,
+        "min_samples_leaf": 20,
+        "l2_regularization": 1.0,
+        "max_bins": 255,
+        "early_stopping": true,
+        "n_iter_no_change": 20,
+        "validation_fraction": 0.1,
+        "tol": 0.0001
+      }
+    },
+    "elapsed_s": 9.1
+  },
+  "results": {
+    "baseline_random": {
+      "scorer_name": "baseline_random",
+      "n_alerts": 11119,
+      "n_true_sars": 1057,
+      "sar_rate": 0.09506250562100908,
+      "auc_roc": 0.5090278494714041,
+      "auc_pr": 0.09752434243573516,
+      "threshold_metrics": {
+        "threshold": 0.5,
+        "tp": 540,
+        "fp": 5024,
+        "tn": 5038,
+        "fn": 517,
+        "precision": 0.09705248023005032,
+        "recall": 0.510879848628193,
+        "f1": 0.16311735387403717,
+        "fpr": 0.4993043132578016,
+        "fnr": 0.489120151371807
+      },
+      "ranking_at_k": [
+        {
+          "capacity_fraction": 0.1,
+          "k": 1111,
+          "tp_at_k": 105,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09450945094509451,
+          "recall_at_k": 0.09933774834437085,
+          "sars_per_100_reviewed": 9.450945094509452
+        },
+        {
+          "capacity_fraction": 0.2,
+          "k": 2223,
+          "tp_at_k": 214,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09626630679262259,
+          "recall_at_k": 0.20245979186376536,
+          "sars_per_100_reviewed": 9.62663067926226
+        },
+        {
+          "capacity_fraction": 0.3,
+          "k": 3335,
+          "tp_at_k": 327,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09805097451274362,
+          "recall_at_k": 0.3093661305581835,
+          "sars_per_100_reviewed": 9.805097451274362
+        },
+        {
+          "capacity_fraction": 0.5,
+          "k": 5559,
+          "tp_at_k": 540,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09713977334052887,
+          "recall_at_k": 0.510879848628193,
+          "sars_per_100_reviewed": 9.713977334052887
+        },
+        {
+          "capacity_fraction": 1.0,
+          "k": 11119,
+          "tp_at_k": 1057,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09506250562100908,
+          "recall_at_k": 1.0,
+          "sars_per_100_reviewed": 9.506250562100908
+        }
+      ],
+      "operational": [
+        {
+          "capacity_fraction": 0.1,
+          "k": 1111,
+          "tp_at_k": 105,
+          "fp_at_k": 1006,
+          "missed_sars": 952,
+          "analyst_hours_to_review_k": 555.5,
+          "sar_filing_hours": 210.0,
+          "total_analyst_hours": 765.5,
+          "analyst_days": 127.58333333333333,
+          "fp_per_tp": 9.58095238095238,
+          "missed_sar_rate": 0.9006622516556292
+        },
+        {
+          "capacity_fraction": 0.2,
+          "k": 2223,
+          "tp_at_k": 214,
+          "fp_at_k": 2009,
+          "missed_sars": 843,
+          "analyst_hours_to_review_k": 1111.5,
+          "sar_filing_hours": 428.0,
+          "total_analyst_hours": 1539.5,
+          "analyst_days": 256.5833333333333,
+          "fp_per_tp": 9.38785046728972,
+          "missed_sar_rate": 0.7975402081362346
+        },
+        {
+          "capacity_fraction": 0.3,
+          "k": 3335,
+          "tp_at_k": 327,
+          "fp_at_k": 3008,
+          "missed_sars": 730,
+          "analyst_hours_to_review_k": 1667.5,
+          "sar_filing_hours": 654.0,
+          "total_analyst_hours": 2321.5,
+          "analyst_days": 386.9166666666667,
+          "fp_per_tp": 9.198776758409785,
+          "missed_sar_rate": 0.6906338694418165
+        },
+        {
+          "capacity_fraction": 0.5,
+          "k": 5559,
+          "tp_at_k": 540,
+          "fp_at_k": 5019,
+          "missed_sars": 517,
+          "analyst_hours_to_review_k": 2779.5,
+          "sar_filing_hours": 1080.0,
+          "total_analyst_hours": 3859.5,
+          "analyst_days": 643.25,
+          "fp_per_tp": 9.294444444444444,
+          "missed_sar_rate": 0.489120151371807
+        },
+        {
+          "capacity_fraction": 1.0,
+          "k": 11119,
+          "tp_at_k": 1057,
+          "fp_at_k": 10062,
+          "missed_sars": 0,
+          "analyst_hours_to_review_k": 5559.5,
+          "sar_filing_hours": 2114.0,
+          "total_analyst_hours": 7673.5,
+          "analyst_days": 1278.9166666666667,
+          "fp_per_tp": 9.519394512771996,
+          "missed_sar_rate": 0.0
+        }
+      ],
+      "error_analysis": {
+        "n_tp": 540,
+        "n_fp": 5024,
+        "n_fn": 517,
+        "n_tn": 5038,
+        "fp_score_stats": {
+          "mean": 0.748038217675411,
+          "median": 0.7467276610862575,
+          "p90": 0.9507677427212239
+        },
+        "fn_score_stats": {
+          "mean": 0.2542659317004022,
+          "median": 0.25883491818511717,
+          "p10": 0.051465879538889085
+        },
+        "top_fn_accounts": {
+          "ACC000178": 56,
+          "ACC000287": 53,
+          "ACC000083": 50,
+          "ACC000151": 50,
+          "ACC000160": 50,
+          "ACC000139": 47,
+          "ACC000243": 44,
+          "ACC000102": 39,
+          "ACC000001": 35,
+          "ACC000073": 28
+        }
+      },
+      "error_analysis_by_rule": {
+        "fp_by_rule": {
+          "R08": 4324,
+          "R15": 442,
+          "R02": 128,
+          "R06": 57,
+          "R09": 55,
+          "R07": 17,
+          "R01": 1
+        },
+        "fn_by_rule": {
+          "R15": 136,
+          "R08": 107,
+          "R09": 64,
+          "R06": 62,
+          "R04": 35,
+          "R12": 34,
+          "R02": 27,
+          "R01": 26,
+          "R13": 14,
+          "R11": 12
+        },
+        "tp_by_rule": {
+          "R15": 141,
+          "R08": 112,
+          "R09": 73,
+          "R06": 53,
+          "R12": 39,
+          "R04": 31,
+          "R01": 28,
+          "R13": 21,
+          "R02": 20,
+          "R11": 20,
+          "R07": 2
+        }
+      },
+      "error_analysis_by_severity": {
+        "fp_by_severity": {
+          "high": 4941,
+          "critical": 82,
+          "medium": 1
+        },
+        "fn_by_severity": {
+          "high": 372,
+          "critical": 110,
+          "medium": 35
+        }
+      }
+    },
+    "baseline_severity": {
+      "scorer_name": "baseline_severity",
+      "n_alerts": 11119,
+      "n_true_sars": 1057,
+      "sar_rate": 0.09506250562100908,
+      "auc_roc": 0.5639587067278427,
+      "auc_pr": 0.23766843250601374,
+      "threshold_metrics": {
+        "threshold": 0.5,
+        "tp": 1057,
+        "fp": 10062,
+        "tn": 0,
+        "fn": 0,
+        "precision": 0.09506250562100908,
+        "recall": 1.0,
+        "f1": 0.17362023653088043,
+        "fpr": 1.0,
+        "fnr": 0.0
+      },
+      "ranking_at_k": [
+        {
+          "capacity_fraction": 0.1,
+          "k": 1111,
+          "tp_at_k": 273,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.24572457245724572,
+          "recall_at_k": 0.2582781456953642,
+          "sars_per_100_reviewed": 24.57245724572457
+        },
+        {
+          "capacity_fraction": 0.2,
+          "k": 2223,
+          "tp_at_k": 368,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.1655420602789024,
+          "recall_at_k": 0.34815515610217596,
+          "sars_per_100_reviewed": 16.55420602789024
+        },
+        {
+          "capacity_fraction": 0.3,
+          "k": 3335,
+          "tp_at_k": 435,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.13043478260869565,
+          "recall_at_k": 0.41154210028382215,
+          "sars_per_100_reviewed": 13.043478260869565
+        },
+        {
+          "capacity_fraction": 0.5,
+          "k": 5559,
+          "tp_at_k": 586,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.10541464292138873,
+          "recall_at_k": 0.554399243140965,
+          "sars_per_100_reviewed": 10.541464292138873
+        },
+        {
+          "capacity_fraction": 1.0,
+          "k": 11119,
+          "tp_at_k": 1057,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09506250562100908,
+          "recall_at_k": 1.0,
+          "sars_per_100_reviewed": 9.506250562100908
+        }
+      ],
+      "operational": [
+        {
+          "capacity_fraction": 0.1,
+          "k": 1111,
+          "tp_at_k": 273,
+          "fp_at_k": 838,
+          "missed_sars": 784,
+          "analyst_hours_to_review_k": 555.5,
+          "sar_filing_hours": 546.0,
+          "total_analyst_hours": 1101.5,
+          "analyst_days": 183.58333333333334,
+          "fp_per_tp": 3.06959706959707,
+          "missed_sar_rate": 0.7417218543046358
+        },
+        {
+          "capacity_fraction": 0.2,
+          "k": 2223,
+          "tp_at_k": 368,
+          "fp_at_k": 1855,
+          "missed_sars": 689,
+          "analyst_hours_to_review_k": 1111.5,
+          "sar_filing_hours": 736.0,
+          "total_analyst_hours": 1847.5,
+          "analyst_days": 307.9166666666667,
+          "fp_per_tp": 5.040760869565218,
+          "missed_sar_rate": 0.651844843897824
+        },
+        {
+          "capacity_fraction": 0.3,
+          "k": 3335,
+          "tp_at_k": 435,
+          "fp_at_k": 2900,
+          "missed_sars": 622,
+          "analyst_hours_to_review_k": 1667.5,
+          "sar_filing_hours": 870.0,
+          "total_analyst_hours": 2537.5,
+          "analyst_days": 422.9166666666667,
+          "fp_per_tp": 6.666666666666667,
+          "missed_sar_rate": 0.5884578997161779
+        },
+        {
+          "capacity_fraction": 0.5,
+          "k": 5559,
+          "tp_at_k": 586,
+          "fp_at_k": 4973,
+          "missed_sars": 471,
+          "analyst_hours_to_review_k": 2779.5,
+          "sar_filing_hours": 1172.0,
+          "total_analyst_hours": 3951.5,
+          "analyst_days": 658.5833333333334,
+          "fp_per_tp": 8.486348122866895,
+          "missed_sar_rate": 0.445600756859035
+        },
+        {
+          "capacity_fraction": 1.0,
+          "k": 11119,
+          "tp_at_k": 1057,
+          "fp_at_k": 10062,
+          "missed_sars": 0,
+          "analyst_hours_to_review_k": 5559.5,
+          "sar_filing_hours": 2114.0,
+          "total_analyst_hours": 7673.5,
+          "analyst_days": 1278.9166666666667,
+          "fp_per_tp": 9.519394512771996,
+          "missed_sar_rate": 0.0
+        }
+      ],
+      "error_analysis": {
+        "n_tp": 1057,
+        "n_fp": 10062,
+        "n_fn": 0,
+        "n_tn": 0,
+        "fp_score_stats": {
+          "mean": 0.7538019309285393,
+          "median": 0.7500005099930411,
+          "p90": 0.7500009144917177
+        },
+        "fn_score_stats": {
+          "mean": null,
+          "median": null,
+          "p10": null
+        },
+        "top_fn_accounts": {}
+      },
+      "error_analysis_by_rule": {
+        "fp_by_rule": {
+          "R08": 8676,
+          "R15": 890,
+          "R02": 227,
+          "R06": 129,
+          "R09": 102,
+          "R07": 35,
+          "R01": 3
+        },
+        "fn_by_rule": {},
+        "tp_by_rule": {
+          "R15": 277,
+          "R08": 219,
+          "R09": 137,
+          "R06": 115,
+          "R12": 73,
+          "R04": 66,
+          "R01": 54,
+          "R02": 47,
+          "R13": 35,
+          "R11": 32,
+          "R07": 2
+        }
+      },
+      "error_analysis_by_severity": {
+        "fp_by_severity": {
+          "high": 9903,
+          "critical": 156,
+          "medium": 3
+        },
+        "fn_by_severity": {}
+      }
+    },
+    "histgbm_triage": {
+      "scorer_name": "histgbm_triage",
+      "n_alerts": 11119,
+      "n_true_sars": 1057,
+      "sar_rate": 0.09506250562100908,
+      "auc_roc": 0.9792493258918641,
+      "auc_pr": 0.7739271842260453,
+      "threshold_metrics": {
+        "threshold": 0.11530119167368708,
+        "tp": 1031,
+        "fp": 457,
+        "tn": 9605,
+        "fn": 26,
+        "precision": 0.6928763440860215,
+        "recall": 0.9754020813623463,
+        "f1": 0.8102161100196464,
+        "fpr": 0.04541840588352216,
+        "fnr": 0.02459791863765374
+      },
+      "ranking_at_k": [
+        {
+          "capacity_fraction": 0.1,
+          "k": 1111,
+          "tp_at_k": 759,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.6831683168316832,
+          "recall_at_k": 0.718070009460738,
+          "sars_per_100_reviewed": 68.31683168316832
+        },
+        {
+          "capacity_fraction": 0.2,
+          "k": 2223,
+          "tp_at_k": 1057,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.47548358074673863,
+          "recall_at_k": 1.0,
+          "sars_per_100_reviewed": 47.548358074673864
+        },
+        {
+          "capacity_fraction": 0.3,
+          "k": 3335,
+          "tp_at_k": 1057,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.3169415292353823,
+          "recall_at_k": 1.0,
+          "sars_per_100_reviewed": 31.694152923538233
+        },
+        {
+          "capacity_fraction": 0.5,
+          "k": 5559,
+          "tp_at_k": 1057,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.19014211189062782,
+          "recall_at_k": 1.0,
+          "sars_per_100_reviewed": 19.01421118906278
+        },
+        {
+          "capacity_fraction": 1.0,
+          "k": 11119,
+          "tp_at_k": 1057,
+          "total_true_sars": 1057,
+          "precision_at_k": 0.09506250562100908,
+          "recall_at_k": 1.0,
+          "sars_per_100_reviewed": 9.506250562100908
+        }
+      ],
+      "operational": [
+        {
+          "capacity_fraction": 0.1,
+          "k": 1111,
+          "tp_at_k": 759,
+          "fp_at_k": 352,
+          "missed_sars": 298,
+          "analyst_hours_to_review_k": 555.5,
+          "sar_filing_hours": 1518.0,
+          "total_analyst_hours": 2073.5,
+          "analyst_days": 345.5833333333333,
+          "fp_per_tp": 0.463768115942029,
+          "missed_sar_rate": 0.28192999053926204
+        },
+        {
+          "capacity_fraction": 0.2,
+          "k": 2223,
+          "tp_at_k": 1057,
+          "fp_at_k": 1166,
+          "missed_sars": 0,
+          "analyst_hours_to_review_k": 1111.5,
+          "sar_filing_hours": 2114.0,
+          "total_analyst_hours": 3225.5,
+          "analyst_days": 537.5833333333334,
+          "fp_per_tp": 1.1031220435193945,
+          "missed_sar_rate": 0.0
+        },
+        {
+          "capacity_fraction": 0.3,
+          "k": 3335,
+          "tp_at_k": 1057,
+          "fp_at_k": 2278,
+          "missed_sars": 0,
+          "analyst_hours_to_review_k": 1667.5,
+          "sar_filing_hours": 2114.0,
+          "total_analyst_hours": 3781.5,
+          "analyst_days": 630.25,
+          "fp_per_tp": 2.1551561021759698,
+          "missed_sar_rate": 0.0
+        },
+        {
+          "capacity_fraction": 0.5,
+          "k": 5559,
+          "tp_at_k": 1057,
+          "fp_at_k": 4502,
+          "missed_sars": 0,
+          "analyst_hours_to_review_k": 2779.5,
+          "sar_filing_hours": 2114.0,
+          "total_analyst_hours": 4893.5,
+          "analyst_days": 815.5833333333334,
+          "fp_per_tp": 4.25922421948912,
+          "missed_sar_rate": 0.0
+        },
+        {
+          "capacity_fraction": 1.0,
+          "k": 11119,
+          "tp_at_k": 1057,
+          "fp_at_k": 10062,
+          "missed_sars": 0,
+          "analyst_hours_to_review_k": 5559.5,
+          "sar_filing_hours": 2114.0,
+          "total_analyst_hours": 7673.5,
+          "analyst_days": 1278.9166666666667,
+          "fp_per_tp": 9.519394512771996,
+          "missed_sar_rate": 0.0
+        }
+      ],
+      "error_analysis": {
+        "n_tp": 1031,
+        "n_fp": 457,
+        "n_fn": 26,
+        "n_tn": 9605,
+        "fp_score_stats": {
+          "mean": 0.7557924608095866,
+          "median": 0.8337694842589494,
+          "p90": 0.9282543362484782
+        },
+        "fn_score_stats": {
+          "mean": 0.07028618639121584,
+          "median": 0.08035591954062152,
+          "p10": 0.013745501949542542
+        },
+        "top_fn_accounts": {
+          "ACC000287": 19,
+          "ACC000014": 6,
+          "ACC000083": 1
+        }
+      },
+      "error_analysis_by_rule": {
+        "fp_by_rule": {
+          "R08": 283,
+          "R15": 101,
+          "R06": 35,
+          "R07": 26,
+          "R02": 12
+        },
+        "fn_by_rule": {
+          "R08": 8,
+          "R15": 7,
+          "R01": 3,
+          "R02": 3,
+          "R06": 2,
+          "R12": 2,
+          "R04": 1
+        },
+        "tp_by_rule": {
+          "R15": 270,
+          "R08": 211,
+          "R09": 137,
+          "R06": 113,
+          "R12": 71,
+          "R04": 65,
+          "R01": 51,
+          "R02": 44,
+          "R13": 35,
+          "R11": 32,
+          "R07": 2
+        }
+      },
+      "error_analysis_by_severity": {
+        "fp_by_severity": {
+          "high": 441,
+          "critical": 16
+        },
+        "fn_by_severity": {
+          "high": 22,
+          "critical": 3,
+          "medium": 1
+        }
+      }
+    }
+  },
+  "acceptance_criteria": {
+    "auc_roc_threshold": 0.72,
+    "recall_at_20pct_threshold": 0.45,
+    "failure_auc_roc": 0.58,
+    "ml_auc_roc": 0.9792493258918641,
+    "ml_recall_at_20pct": 1.0,
+    "auc_roc_pass": true,
+    "recall_at_20pct_pass": true,
+    "failure_triggered": false
+  },
+  "permutation_importances": {
+    "f11_cash_fraction_30d": 0.00763675806029116,
+    "f02_vol_30d_log": 0.0045051052443629835,
+    "f07_txn_count_30d": 0.003811938356832867,
+    "f04_max_txn_log": 0.0022117084106920036,
+    "f10_account_age_days": 0.0018698355907659225,
+    "f05_vol_vs_revenue": 0.0016777060747490858,
+    "f16_intl_fraction_30d": 0.0013568477144637158,
+    "f19_shell_counterparty_fraction": 0.00023948021791859732,
+    "f09_recency_gap_days": 0.0,
+    "f15_night_fraction_30d": 0.0,
+    "f01_vol_7d_log": -1.5438811064805158e-05,
+    "f21_adverse_media_flag": -4.91371660322315e-05,
+    "f20_pep_flag": -5.121510588930178e-05,
+    "f17_distinct_jurisdictions_30d": -7.238000461469163e-05,
+    "f22_high_risk_industry": -0.00016981751927076517,
+    "f03_vol_ratio_7_30": -0.00026688833865793347,
+    "f08_velocity_ratio": -0.00031203886894626276,
+    "f14_digital_channel_fraction": -0.0004957814059923127,
+    "f24_account_jurisdiction_score": -0.0010845905809711899,
+    "f06_txn_count_7d": -0.0013041752299413957,
+    "f18_very_high_jur_flag": -0.001411203236245484,
+    "f13_round_amount_count_30d": -0.003118856091287836,
+    "f12_structuring_count_30d": -0.007235847302072362,
+    "f23_prior_alerts_90d": -0.010483798932897881
+  }
+}

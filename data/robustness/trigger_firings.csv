@@ -1,0 +1,5 @@
+,trigger_id,severity,window_label,metric,metric_value,reference_value,condition,threshold,message,action,description
+0,T06,P1,Window-1,max_feature_psi,14.3921,,gt,0.25,max_feature_psi=14.3921 > threshold 0.25,Escalate. Identify shifted features; assess whether retraining is required.,PSI ≥ 0.25 on at least one feature indicates significant distribution shift.
+1,T06,P1,Window-2,max_feature_psi,14.3921,,gt,0.25,max_feature_psi=14.3921 > threshold 0.25,Escalate. Identify shifted features; assess whether retraining is required.,PSI ≥ 0.25 on at least one feature indicates significant distribution shift.
+2,T08,P2,Window-2,cls_threshold,0.2289,0.0556,abs_delta_gt,0.1,|cls_threshold=0.2289 − prev_cls_threshold=0.0556| = 0.1733 > threshold 0.1,Investigate. Threshold instability may indicate score distribution shift.,Classification threshold shifted >0.10 since last window.
+3,T06,P1,Window-3,max_feature_psi,14.3921,,gt,0.25,max_feature_psi=14.3921 > threshold 0.25,Escalate. Identify shifted features; assess whether retraining is required.,PSI ≥ 0.25 on at least one feature indicates significant distribution shift.

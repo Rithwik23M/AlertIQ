@@ -1,0 +1,4 @@
+scorer,n_alerts,n_true_sars,sar_rate_pct,auc_roc,auc_pr,threshold,precision,recall,f1,fpr,fnr,precision_at_10pct,recall_at_10pct,sars_per_100_at_10pct,precision_at_20pct,recall_at_20pct,sars_per_100_at_20pct,precision_at_30pct,recall_at_30pct,sars_per_100_at_30pct,precision_at_50pct,recall_at_50pct,sars_per_100_at_50pct,precision_at_100pct,recall_at_100pct,sars_per_100_at_100pct
+baseline_random,11119,1057,9.51,0.509,0.0975,0.5,0.0971,0.5109,0.1631,0.4993,0.4891,0.0945,0.0993,9.45,0.0963,0.2025,9.63,0.0981,0.3094,9.81,0.0971,0.5109,9.71,0.0951,1.0,9.51
+baseline_severity,11119,1057,9.51,0.564,0.2377,0.5,0.0951,1.0,0.1736,1.0,0.0,0.2457,0.2583,24.57,0.1655,0.3482,16.55,0.1304,0.4115,13.04,0.1054,0.5544,10.54,0.0951,1.0,9.51
+histgbm_triage,11119,1057,9.51,0.9792,0.7739,0.1153,0.6929,0.9754,0.8102,0.0454,0.0246,0.6832,0.7181,68.32,0.4755,1.0,47.55,0.3169,1.0,31.69,0.1901,1.0,19.01,0.0951,1.0,9.51
