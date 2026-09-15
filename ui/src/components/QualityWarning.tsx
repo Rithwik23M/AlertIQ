@@ -15,7 +15,7 @@ export function QualityWarning({ warning, detail }: QualityWarningProps) {
   if (!warning) return null;
   return (
     <span
-      className="inline-flex items-center gap-1 text-amber-500/75 text-xs"
+      className="inline-flex items-center gap-1 text-amber-700 text-xs font-medium"
       title={detail ?? "Data quality warning — one or more features may be unreliable"}
     >
       <svg
@@ -25,9 +25,10 @@ export function QualityWarning({ warning, detail }: QualityWarningProps) {
         fill="currentColor"
         aria-hidden="true"
       >
-        <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
       </svg>
-      Data issue
+      DQ
     </span>
   );
 }

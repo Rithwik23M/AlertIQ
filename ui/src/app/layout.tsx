@@ -14,13 +14,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-aq-navy text-aq-text antialiased">
+      <body className="min-h-screen bg-[#f9fafb] text-aq-text antialiased flex flex-col">
         {/* ── Top navigation bar ── */}
         <header
           className="border-b border-aq-border bg-aq-surface sticky top-0 z-50"
           role="banner"
         >
-          <div className="max-w-screen-2xl mx-auto px-6 h-14 flex items-center gap-6">
+          <div className="w-full px-6 h-14 flex items-center gap-6">
 
             {/* Brand mark */}
             <a
@@ -39,14 +39,14 @@ export default function RootLayout({
               >
                 <path
                   d="M11 1.5L2.5 6.25v9.5L11 20.5l8.5-4.75V6.25L11 1.5z"
-                  stroke="#3B82F6"
+                  stroke="#16a34a"
                   strokeWidth="1.25"
                   strokeLinejoin="round"
                   fill="none"
                 />
                 <path
                   d="M11 7.5L7 9.75v4.5L11 16.5l4-2.25V9.75L11 7.5z"
-                  fill="#3B82F6"
+                  fill="#16a34a"
                   opacity="0.5"
                 />
               </svg>
@@ -75,19 +75,8 @@ export default function RootLayout({
               </a>
             </nav>
 
-            {/* Right side — model indicator + compliance notice */}
+            {/* Right side — compliance notice */}
             <div className="ml-auto flex items-center gap-4">
-              {/* Environment / model indicator */}
-              <div
-                className="hidden md:flex items-center gap-2 text-xs text-aq-text-dim"
-                aria-label="Model environment"
-              >
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500/70 flex-shrink-0" aria-hidden="true" />
-                <span className="font-mono">v1.0.1</span>
-                <span className="text-aq-border">·</span>
-                <span>Production</span>
-              </div>
-
               {/* Compliance notice */}
               <p
                 className="hidden lg:block text-xs text-aq-text-dim border-l border-aq-border pl-4"
@@ -100,11 +89,32 @@ export default function RootLayout({
         </header>
 
         <main
-          className="max-w-screen-2xl mx-auto px-6 py-6"
+          className="w-full px-6 py-6 flex-1"
           id="main-content"
         >
           {children}
         </main>
+
+        {/* ── Footer — version indicator ── */}
+        <footer
+          className="border-t border-[var(--aq-border)] bg-[var(--aq-surface)] mt-auto"
+          role="contentinfo"
+        >
+          <div className="w-full px-6 h-9 flex items-center justify-between">
+            <div
+              className="flex items-center gap-2 text-xs text-[var(--aq-text-dim)]"
+              aria-label="Application version"
+            >
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500/70 flex-shrink-0" aria-hidden="true" />
+              <span className="font-mono">v1.0.1</span>
+              <span className="text-[var(--aq-border)]">·</span>
+              <span>Production</span>
+            </div>
+            <p className="text-xs text-[var(--aq-text-dim)]">
+              AlertIQ — AML Investigation Workspace
+            </p>
+          </div>
+        </footer>
       </body>
     </html>
   );

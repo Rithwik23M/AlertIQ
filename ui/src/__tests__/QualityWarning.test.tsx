@@ -11,9 +11,9 @@ describe("QualityWarning", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders Data issue indicator when warning=true", () => {
+  it("renders DQ indicator when warning=true", () => {
     render(<QualityWarning warning={true} />);
-    expect(screen.getByText("Data issue")).toBeInTheDocument();
+    expect(screen.getByText("DQ")).toBeInTheDocument();
   });
 
   it("uses default tooltip when no detail provided", () => {

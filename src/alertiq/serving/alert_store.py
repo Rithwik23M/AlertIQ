@@ -257,8 +257,11 @@ def get_queue_stats() -> dict[str, Any]:
         escalated = conn.execute(
             "SELECT COUNT(*) FROM investigation_state WHERE status = 'escalated'"
         ).fetchone()[0]
+        needs_review = conn.execute(
+            "SELECT COUNT(*) FROM investigation_state WHERE status = 'needs_further_review'"
+        ).fetchone()[0]
         closed = conn.execute(
-            "SELECT COUNT(*) FROM investigation_state WHERE status IN ('closed', 'needs_further_review')"
+            "SELECT COUNT(*) FROM investigation_state WHERE status = 'closed'"
         ).fetchone()[0]
         # Top 20% by risk score = the "capacity" queue
         capacity_count = max(1, round(total * 0.20))
@@ -270,6 +273,7 @@ def get_queue_stats() -> dict[str, Any]:
                 "new": new_count,
                 "in_progress": in_progress,
                 "escalated": escalated,
+                "needs_further_review": needs_review,
                 "closed": closed,
             },
         }

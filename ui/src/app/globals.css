@@ -9,64 +9,64 @@
    ============================================================ */
 
 :root {
-  /* ── Core surface palette ── */
-  --aq-navy:          #0c1622;
-  --aq-surface:       #132032;
-  --aq-surface-raised:#1a2d43;
-  --aq-muted:         #223347;
-  --aq-border:        #1e3050;
-  --aq-border-subtle: #192840;
+  /* ── Core surface palette — light / Experiential-style ── */
+  --aq-navy:          #ffffff;
+  --aq-surface:       #ffffff;
+  --aq-surface-raised:#f9fafb;
+  --aq-muted:         #f3f4f6;
+  --aq-border:        #e5e7eb;
+  --aq-border-subtle: #f3f4f6;
 
   /* ── Text hierarchy ── */
-  --aq-text:           #d0e0f0;
-  --aq-text-secondary: #8dafc8;
-  --aq-text-dim:       #526b85;
+  --aq-text:           #111827;
+  --aq-text-secondary: #374151;
+  --aq-text-dim:       #9ca3af;
 
-  /* ── Accent ── */
-  --aq-accent:     #3b82f6;
-  --aq-accent-dim: rgba(59, 130, 246, 0.12);
+  /* ── Accent — forest green ── */
+  --aq-accent:     #16a34a;
+  --aq-accent-dim: rgba(22, 163, 74, 0.10);
 
-  /* ── Risk semantic colours (muted, professional) ── */
-  --risk-critical-text:   #e05252;
-  --risk-critical-bg:     rgba(220, 50, 50, 0.10);
-  --risk-critical-border: rgba(220, 50, 50, 0.22);
+  /* ── Risk semantic colours (light-background optimised) ── */
+  --risk-critical-text:   #dc2626;
+  --risk-critical-bg:     rgba(220, 38, 38, 0.08);
+  --risk-critical-border: rgba(220, 38, 38, 0.28);
 
-  --risk-high-text:   #d9824a;
-  --risk-high-bg:     rgba(217, 130, 74, 0.10);
-  --risk-high-border: rgba(217, 130, 74, 0.22);
+  --risk-high-text:   #ea580c;
+  --risk-high-bg:     rgba(234, 88, 12, 0.08);
+  --risk-high-border: rgba(234, 88, 12, 0.28);
 
-  --risk-medium-text:   #c8a83a;
-  --risk-medium-bg:     rgba(200, 168, 58, 0.10);
-  --risk-medium-border: rgba(200, 168, 58, 0.22);
+  --risk-medium-text:   #d97706;
+  --risk-medium-bg:     rgba(217, 119, 6, 0.08);
+  --risk-medium-border: rgba(217, 119, 6, 0.28);
 
-  --risk-low-text:   #4aaa72;
-  --risk-low-bg:     rgba(74, 170, 114, 0.10);
-  --risk-low-border: rgba(74, 170, 114, 0.22);
+  --risk-low-text:   #16a34a;
+  --risk-low-bg:     rgba(22, 163, 74, 0.08);
+  --risk-low-border: rgba(22, 163, 74, 0.28);
 
-  --risk-minimal-text:   #5e7a90;
-  --risk-minimal-bg:     rgba(94, 122, 144, 0.10);
-  --risk-minimal-border: rgba(94, 122, 144, 0.22);
+  --risk-minimal-text:   #6b7280;
+  --risk-minimal-bg:     rgba(107, 114, 128, 0.08);
+  --risk-minimal-border: rgba(107, 114, 128, 0.22);
 
-  /* ── Status semantic colours ── */
-  --status-new-text:   #4a9eed;
-  --status-new-bg:     rgba(74, 158, 237, 0.10);
-  --status-new-border: rgba(74, 158, 237, 0.22);
+  /* ── Status semantic colours (light-background optimised) ── */
+  --status-new-text:   #2563eb;
+  --status-new-bg:     rgba(37, 99, 235, 0.08);
+  --status-new-border: rgba(37, 99, 235, 0.25);
 
-  --status-progress-text:   #8b7cd8;
-  --status-progress-bg:     rgba(139, 124, 216, 0.10);
-  --status-progress-border: rgba(139, 124, 216, 0.22);
+  --status-progress-text:   #7c3aed;
+  --status-progress-bg:     rgba(124, 58, 237, 0.08);
+  --status-progress-border: rgba(124, 58, 237, 0.25);
 
-  --status-escalated-text:   #e05252;
-  --status-escalated-bg:     rgba(220, 50, 50, 0.10);
-  --status-escalated-border: rgba(220, 50, 50, 0.22);
+  --status-escalated-text:   #dc2626;
+  --status-escalated-bg:     rgba(220, 38, 38, 0.08);
+  --status-escalated-border: rgba(220, 38, 38, 0.25);
 
-  --status-closed-text:   #5e7a90;
-  --status-closed-bg:     rgba(94, 122, 144, 0.10);
-  --status-closed-border: rgba(94, 122, 144, 0.22);
+  --status-closed-text:   #6b7280;
+  --status-closed-bg:     rgba(107, 114, 128, 0.08);
+  --status-closed-border: rgba(107, 114, 128, 0.22);
 
-  --status-review-text:   #c8883a;
-  --status-review-bg:     rgba(200, 136, 58, 0.10);
-  --status-review-border: rgba(200, 136, 58, 0.22);
+  --status-review-text:   #d97706;
+  --status-review-bg:     rgba(217, 119, 6, 0.08);
+  --status-review-border: rgba(217, 119, 6, 0.25);
 }
 
 /* ============================================================
@@ -79,7 +79,7 @@
 
 html,
 body {
-  background: var(--aq-navy);
+  background: #f9fafb;
   color: var(--aq-text);
   font-family: "Inter", system-ui, sans-serif;
   height: 100%;
@@ -96,14 +96,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--aq-surface);
+  background: var(--aq-muted);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--aq-muted);
+  background: var(--aq-border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2e4560;
+  background: #9ca3af;
 }
 
 /* ============================================================
