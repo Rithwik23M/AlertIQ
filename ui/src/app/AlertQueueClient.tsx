@@ -46,90 +46,69 @@ const SORT_OPTIONS: {
 // Capacity Strip                                                       //
 // ------------------------------------------------------------------ //
 
+const STATUS_PILL_STYLES: Record<AlertStatus, string> = {
+  new:                  "bg-[var(--status-new-bg)] text-[var(--status-new-text)] border border-[var(--status-new-border)]",
+  in_progress:          "bg-[var(--status-progress-bg)] text-[var(--status-progress-text)] border border-[var(--status-progress-border)]",
+  escalated:            "bg-[var(--status-escalated-bg)] text-[var(--status-escalated-text)] border border-[var(--status-escalated-border)]",
+  needs_further_review: "bg-[var(--status-review-bg)] text-[var(--status-review-text)] border border-[var(--status-review-border)]",
+  closed:               "bg-[var(--status-closed-bg)] text-[var(--status-closed-text)] border border-[var(--status-closed-border)]",
+};
+
+const STATUS_PILL_LABELS: Record<AlertStatus, string> = {
+  new:                  "New",
+  in_progress:          "In Progress",
+  escalated:            "Escalated",
+  needs_further_review: "Needs Review",
+  closed:               "Closed",
+};
+
 function CapacityBanner({ stats }: { stats: QueueStats }) {
   const pct = Math.round(stats.capacity_fraction * 100);
   const inCapacity = stats.capacity_count;
   const total = stats.total_alerts;
 
-  // Capacity bar represents how much of the reserved band is filled.
-  const capacityBandSize = Math.max(1, Math.round(total * stats.capacity_fraction));
-  const pctFilled = Math.min(100, Math.round((inCapacity / capacityBandSize) * 100));
-
-  const statusPairs: { label: string; status: AlertStatus }[] = [
-    { label: "New",         status: "new" },
-    { label: "In Progress", status: "in_progress" },
-    { label: "Escalated",   status: "escalated" },
-    { label: "Needs Review",status: "needs_further_review" },
-    { label: "Closed",      status: "closed" },
+  const statusOrder: AlertStatus[] = [
+    "new", "in_progress", "escalated", "needs_further_review", "closed",
   ];
 
   return (
     <div
-      className="rounded border border-aq-border bg-aq-surface mb-6 grid grid-cols-1 sm:grid-cols-3"
+      className="rounded border border-gray-200 bg-white mb-6 px-5 py-4 shadow-sm"
       role="region"
-      aria-label="Queue capacity summary"
+      aria-label="Analyst capacity summary"
     >
-      {/* Col 1 — Review Capacity */}
-      <div className="px-5 py-4 sm:border-r sm:border-aq-border">
-        <p className="text-xs font-medium text-aq-text-secondary uppercase tracking-wide mb-2">
-          Review Capacity
+      {/* Header row */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        {/* Label */}
+        <p className="text-xs font-semibold text-aq-text-secondary uppercase tracking-widest whitespace-nowrap flex-shrink-0">
+          Analyst Capacity Band
         </p>
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-semibold text-aq-text tabular-nums">
+
+        {/* Count */}
+        <div className="flex items-baseline gap-1 flex-shrink-0">
+          <span className="text-lg font-bold text-aq-text tabular-nums leading-none">
             {inCapacity}
           </span>
-          <span className="text-sm text-aq-text-dim">
-            of {total} alerts
+          <span className="text-xs text-aq-text-dim">
+            / {total} alerts in top {pct}%
           </span>
         </div>
-        <p className="text-xs text-aq-text-dim mt-0.5">
-          Capacity policy: top {pct}%
-        </p>
-      </div>
 
-      {/* Col 2 — Queue Status */}
-      <div className="px-5 py-4 border-t border-aq-border sm:border-t-0 sm:border-r sm:border-aq-border">
-        <p className="text-xs font-medium text-aq-text-secondary uppercase tracking-wide mb-2">
-          Queue Status
-        </p>
-        <div className="flex flex-wrap gap-x-5 gap-y-1.5">
-          {statusPairs.map(({ label, status }) => {
+        {/* Status pills */}
+        <div className="flex flex-wrap items-center gap-1.5 ml-auto">
+          {statusOrder.map((status) => {
             const count = stats.status_counts[status] ?? 0;
             return (
-              <div key={status} className="flex items-center gap-1.5">
-                <span className="text-sm font-semibold tabular-nums text-aq-text">
-                  {count}
-                </span>
-                <span className="text-xs text-aq-text-dim">{label}</span>
-              </div>
+              <span
+                key={status}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium tabular-nums ${STATUS_PILL_STYLES[status]}`}
+              >
+                <span>{count}</span>
+                <span className="opacity-75">{STATUS_PILL_LABELS[status]}</span>
+              </span>
             );
           })}
         </div>
-      </div>
-
-      {/* Col 3 — Capacity Utilisation */}
-      <div className="px-5 py-4 border-t border-aq-border sm:border-t-0">
-        <p className="text-xs font-medium text-aq-text-secondary uppercase tracking-wide mb-2">
-          Capacity Utilisation
-        </p>
-        <div
-          className="h-1.5 rounded-full bg-aq-muted overflow-hidden"
-          role="progressbar"
-          aria-valuenow={pctFilled}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`${pctFilled}% of capacity band filled`}
-        >
-          <div
-            className="h-full rounded-full bg-aq-accent transition-all duration-500"
-            style={{ width: `${pctFilled}%` }}
-          />
-        </div>
-        <p className="text-xs text-aq-text-dim mt-2 tabular-nums">
-          {pctFilled}% utilised
-          <span className="mx-1.5 text-aq-border" aria-hidden="true">·</span>
-          {inCapacity} alerts in band
-        </p>
       </div>
     </div>
   );
@@ -163,15 +142,15 @@ function FilterBar({ filters, onFiltersChange, onReset }: FilterBarProps) {
   }
 
   const inputCls =
-    "h-9 rounded border border-aq-border bg-aq-surface-raised px-3 text-sm text-aq-text " +
-    "placeholder:text-aq-text-dim focus:outline-none focus:ring-1 focus:ring-aq-accent " +
+    "h-9 rounded border border-gray-300 bg-white px-3 text-sm text-aq-text shadow-sm " +
+    "placeholder:text-aq-text-dim focus:outline-none focus:ring-2 focus:ring-aq-accent/30 " +
     "focus:border-aq-accent transition-colors";
 
   const selectCls = `${inputCls} cursor-pointer appearance-none`;
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 mb-5 px-3 py-2.5 rounded border border-aq-border bg-aq-surface"
+      className="flex flex-wrap items-center gap-2 mb-5 px-4 py-3 rounded border border-gray-200 bg-gray-50 shadow-sm"
       role="search"
       aria-label="Alert filters"
     >
@@ -186,48 +165,51 @@ function FilterBar({ filters, onFiltersChange, onReset }: FilterBarProps) {
       />
 
       {/* Status filter */}
-      <select
-        value={filters.status ?? ""}
-        onChange={(e) =>
-          onFiltersChange({
-            status: (e.target.value as AlertStatus | "") || undefined,
-            page: 1,
-          })
-        }
-        className={`${selectCls} w-40`}
-        aria-label="Filter by status"
-      >
-        {STATUS_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          value={filters.status ?? ""}
+          onChange={(e) =>
+            onFiltersChange({
+              status: (e.target.value as AlertStatus | "") || undefined,
+              page: 1,
+            })
+          }
+          className={`${selectCls} w-40 pr-8`}
+          aria-label="Filter by status"
+        >
+          {STATUS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-aq-text-dim" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
 
-      {/* Min risk score */}
+      {/* Min risk score — displayed as 0–100, stored as 0.00–1.00 */}
       <div className="flex items-center gap-2">
         <label
           className="text-xs text-aq-text-dim whitespace-nowrap"
           htmlFor="filter-min-score"
         >
-          Min. risk score
+          Min. risk %
         </label>
         <input
           id="filter-min-score"
           type="number"
           min={0}
-          max={1}
-          step={0.05}
-          placeholder="0.00"
-          value={filters.min_score ?? ""}
+          max={100}
+          step={5}
+          placeholder="0–100"
+          value={filters.min_score !== undefined ? Math.round(filters.min_score * 100) : ""}
           onChange={(e) =>
             onFiltersChange({
-              min_score: e.target.value ? Number(e.target.value) : undefined,
+              min_score: e.target.value ? Number(e.target.value) / 100 : undefined,
               page: 1,
             })
           }
-          className={`${inputCls} w-20`}
-          aria-label="Minimum risk score"
+          className={`${inputCls} w-24`}
+          aria-label="Minimum risk score (0 to 100)"
         />
       </div>
 
@@ -235,23 +217,26 @@ function FilterBar({ filters, onFiltersChange, onReset }: FilterBarProps) {
       <div className="flex items-center gap-2 ml-auto">
         <span className="text-xs text-aq-text-dim hidden sm:inline">Sort</span>
 
-        <select
-          value={filters.sort_by ?? "risk_score"}
-          onChange={(e) =>
-            onFiltersChange({
-              sort_by: e.target.value as AlertFilters["sort_by"],
-              page: 1,
-            })
-          }
-          className={`${selectCls} w-36`}
-          aria-label="Sort alerts by"
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={filters.sort_by ?? "risk_score"}
+            onChange={(e) =>
+              onFiltersChange({
+                sort_by: e.target.value as AlertFilters["sort_by"],
+                page: 1,
+              })
+            }
+            className={`${selectCls} w-36 pr-8`}
+            aria-label="Sort alerts by"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-aq-text-dim" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
 
         {/* Sort direction toggle */}
         <button
@@ -263,8 +248,8 @@ function FilterBar({ filters, onFiltersChange, onReset }: FilterBarProps) {
             })
           }
           className={
-            "h-9 w-9 flex items-center justify-center rounded border border-aq-border " +
-            "bg-aq-surface-raised text-aq-text-dim hover:text-aq-text hover:bg-aq-muted transition-colors"
+            "h-9 w-9 flex items-center justify-center rounded border border-gray-300 " +
+            "bg-white text-aq-text-dim shadow-sm hover:text-aq-text hover:bg-gray-100 transition-colors"
           }
           aria-label={`Sort ${filters.sort_dir === "asc" ? "descending" : "ascending"}`}
           title={`Currently: ${filters.sort_dir === "asc" ? "ascending" : "descending"}`}
@@ -285,8 +270,8 @@ function FilterBar({ filters, onFiltersChange, onReset }: FilterBarProps) {
           type="button"
           onClick={onReset}
           className={
-            "h-9 px-3 rounded border border-aq-border bg-aq-surface-raised " +
-            "text-xs text-aq-text-dim hover:text-aq-text hover:bg-aq-muted transition-colors"
+            "h-9 px-3 rounded border border-gray-300 bg-white shadow-sm " +
+            "text-xs text-aq-text-dim hover:text-aq-text hover:bg-gray-100 transition-colors"
           }
         >
           Reset
@@ -320,7 +305,7 @@ function AlertTable({ data, onRowClick }: AlertTableProps) {
   }
 
   const thCls =
-    "px-4 py-3 text-left text-xs font-medium text-aq-text-secondary uppercase tracking-wider whitespace-nowrap bg-aq-surface";
+    "px-4 py-3 text-left text-xs font-medium text-aq-text-secondary uppercase tracking-wider whitespace-nowrap bg-gray-50 border-b border-gray-200";
 
   const tdCls = "px-4 py-3.5 text-sm";
 
@@ -331,7 +316,7 @@ function AlertTable({ data, onRowClick }: AlertTableProps) {
         role="grid"
         aria-label="Alert queue"
       >
-        <thead className="sticky top-14 z-10">
+        <thead>
           <tr className="divide-x divide-aq-border-subtle">
             <th scope="col" className={`${thCls} w-12`}>#</th>
             <th scope="col" className={thCls}>Alert ID</th>
@@ -345,8 +330,8 @@ function AlertTable({ data, onRowClick }: AlertTableProps) {
             <th scope="col" className={`${thCls} w-8`} aria-hidden="true" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-aq-border bg-aq-navy">
-          {data.items.map((alert) => (
+        <tbody className="divide-y divide-aq-border bg-white">
+          {data.items.map((alert, idx) => (
             <tr
               key={alert.alert_id}
               aria-label={`#${alert.queue_position}`}
@@ -358,8 +343,9 @@ function AlertTable({ data, onRowClick }: AlertTableProps) {
                 }
               }}
               className={
-                "cursor-pointer hover:bg-aq-surface/70 transition-colors group " +
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-aq-accent"
+                "cursor-pointer transition-colors group " +
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-aq-accent " +
+                (idx % 2 === 0 ? "bg-white hover:bg-green-50/60" : "bg-gray-50/70 hover:bg-green-50/60")
               }
               role="row"
               tabIndex={0}
@@ -372,7 +358,7 @@ function AlertTable({ data, onRowClick }: AlertTableProps) {
               {/* Alert ID */}
               <td className={tdCls}>
                 <span
-                  className="font-mono text-xs text-aq-accent group-hover:text-blue-300 transition-colors"
+                  className="font-mono text-xs text-aq-accent group-hover:text-green-700 transition-colors"
                   title={alert.alert_id}
                 >
                   {alert.alert_id.slice(0, 12)}
@@ -568,7 +554,7 @@ function TableSkeleton() {
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
-          className="h-14 bg-aq-navy border-b border-aq-border flex items-center px-4 gap-4"
+          className="h-14 bg-aq-surface border-b border-aq-border flex items-center px-4 gap-4"
         >
           <div
             className="h-3 rounded bg-aq-surface-raised animate-pulse"

@@ -133,7 +133,7 @@ function AlertHeader({
       <div className="flex flex-wrap items-start gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-lg font-semibold text-white font-mono">
+            <h1 className="text-lg font-semibold text-aq-text font-mono">
               {alert.alert_id}
             </h1>
             <RiskBadge score={alert.risk_score} size="md" />
@@ -161,7 +161,7 @@ function AlertHeader({
             <button
               onClick={onOpen}
               disabled={opening}
-              className="h-8 px-4 rounded bg-aq-accent hover:bg-blue-500 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-8 px-4 rounded bg-aq-accent hover:bg-green-700 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {opening ? "Opening…" : "Open Investigation"}
             </button>
@@ -600,7 +600,7 @@ function DecisionPanel({
       <button
         onClick={handleSubmit}
         disabled={!outcome || submitting}
-        className="w-full h-9 rounded bg-aq-accent hover:bg-blue-500 text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full h-9 rounded bg-aq-accent hover:bg-green-700 text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {submitting ? "Recording…" : "Record Decision"}
       </button>

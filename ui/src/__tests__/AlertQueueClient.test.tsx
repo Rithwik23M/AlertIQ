@@ -122,7 +122,7 @@ describe("Capacity Banner", () => {
     // Delay the stats fetch — strip should just not render yet
     mockFetchStats.mockReturnValue(new Promise(() => {}));
     render(<AlertQueueClient />);
-    expect(screen.queryByText(/Review Capacity/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Analyst Capacity Band/)).not.toBeInTheDocument();
   });
 });
 
@@ -160,16 +160,16 @@ describe("Alert Table", () => {
     });
   });
 
-  it("shows Data issue warning when quality_warning=true", async () => {
+  it("shows DQ warning when quality_warning=true", async () => {
     const alert = makeAlert({ quality_warning: true });
     mockFetchAlerts.mockResolvedValue(makeListResponse([alert]));
     render(<AlertQueueClient />);
     await waitFor(() => {
-      expect(screen.getByText("Data issue")).toBeInTheDocument();
+      expect(screen.getByText("DQ")).toBeInTheDocument();
     });
   });
 
-  it("does not show Data issue warning when quality_warning=false", async () => {
+  it("does not show DQ warning when quality_warning=false", async () => {
     const alert = makeAlert({ quality_warning: false });
     mockFetchAlerts.mockResolvedValue(makeListResponse([alert]));
     render(<AlertQueueClient />);
@@ -177,7 +177,7 @@ describe("Alert Table", () => {
       // Table should be visible
       expect(screen.getByText(/ALRT/)).toBeInTheDocument();
     });
-    expect(screen.queryByText("Data issue")).not.toBeInTheDocument();
+    expect(screen.queryByText("DQ")).not.toBeInTheDocument();
   });
 
   it("shows 'Unassigned' for null assigned_to", async () => {
