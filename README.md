@@ -46,7 +46,7 @@ graph TB
     end
 
     subgraph API["Serving Layer (Starlette)"]
-        ROUTES[9 REST endpoints<br/>/alerts · /alerts/{id}/transactions<br/>/alerts/{id}/notes · /alerts/{id}/decision]
+        ROUTES[9 REST endpoints<br/>/alerts · /alerts/:id/transactions<br/>/alerts/:id/notes · /alerts/:id/decision]
         SCORER[InferenceScorer<br/>loads model.joblib<br/>scores on request]
         EXPL[Explainability<br/>15 feature signals<br/>FACTUAL · MODEL · HUMAN]
     end
@@ -164,7 +164,7 @@ Analysts work through the sorted queue and stop at their capacity limit. The key
 | Capacity | Random baseline | Severity baseline | AlertIQ ML | Lift vs. random |
 |---|---|---|---|---|
 | Review top 10% | 9.9% of SARs caught | 25.8% of SARs caught | **71.8% of SARs caught** | 7.2× |
-| Review top 20% | 20.3% of SARs caught | 34.8% of SARs caught | **100.0% of SARs caught** | 4.9× |
+| Review top 20% | 20.2% of SARs caught | 34.8% of SARs caught | **100.0% of SARs caught** | 4.9× |
 | Review top 30% | 30.9% of SARs caught | 41.2% of SARs caught | **100.0% of SARs caught** | 3.2× |
 
 ### Classification Mode (Diagnostic)
@@ -191,7 +191,7 @@ The model is stable across the three training windows evaluated.
 
 | Scorer | AUC-ROC | Recall@20% |
 |---|---|---|
-| Random | 0.509 | 20.3% |
+| Random | 0.509 | 20.2% |
 | Severity-only | 0.564 | 34.8% |
 | **AlertIQ ML** | **0.979** | **100.0%** |
 
@@ -243,12 +243,15 @@ source .venv/bin/activate       # Windows: .venv\Scripts\activate
 # Install dependencies
 pip install -e ".[dev]"
 
+# Train and register the model (required on first run — models/ is not committed)
+python scripts/train_and_serialize.py --version 1.0.0 --promote
+
 # Seed the investigation database with demonstration alerts
 python scripts/seed_alert_store.py
 
 # Start the API server
 uvicorn alertiq.serving.app:app --reload --port 8000
-# API docs: http://localhost:8000/health
+# Health check: http://localhost:8000/health
 ```
 
 ### Frontend (UI)
@@ -280,7 +283,7 @@ pytest tests/serving/test_investigation_journey.py -v
 
 ```bash
 docker build -t alertiq:local .
-docker run -p 8000:8000 -e ALERTIQ_STORE_PATH=/tmp/alertiq.db alertiq:local
+docker run -p 8000:8080 -e ALERTIQ_STORE_PATH=/tmp/alertiq.db alertiq:local
 ```
 
 ### Reproduce the ML Results
