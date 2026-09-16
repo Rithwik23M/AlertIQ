@@ -1,4 +1,4 @@
-# AlertIQ — Milestone 5 Completion Report
+# AlertIQ  -  Milestone 5 Completion Report
 
 **Milestone:** Deploy and Operate  
 **Target platform:** Google Cloud Run  
@@ -24,7 +24,7 @@ deliverable listed in the milestone specification was completed.
 | `ci.yml` | Runs on every push and PR: `quality` → `test` + `security` (parallel) → `build` |
 | `cd.yml` | Runs on successful CI for `main`: `build-push` → `deploy` (staging + smoke tests) |
 
-CI is self-contained — no `alerts.csv` or pre-trained model artifact is
+CI is self-contained  -  no `alerts.csv` or pre-trained model artifact is
 needed.  All serving tests use synthetic numpy fixtures.
 
 CD authenticates to GCP via Workload Identity Federation (no long-lived
@@ -64,14 +64,14 @@ Key fields:
 
 Two layers of protection ensure audit failures never block scoring:
 
-1. `_emit_single_audit()` — catches all exceptions from
+1. `_emit_single_audit()`  -  catches all exceptions from
    `AuditLogger.record_score()`, logs to stderr, increments the
    `audit_failures` counter.
 2. The batch handler's `record_batch_score()` call is wrapped in the same
    pattern.
 
 The same principle applies in `audit.py._emit()`: `OSError` is caught,
-logged, and counted — the caller always gets a response.
+logged, and counted  -  the caller always gets a response.
 
 ### Operational scripts (`scripts/`)
 
@@ -86,15 +86,15 @@ logged, and counted — the caller always gets a response.
 
 | Category | Tests |
 |----------|-------|
-| Audit log failure | 4 — OSError absorbed by single and batch endpoints; counter incremented |
-| Degraded mode | 4 — 200/degraded from `/health`; 503 from scoring endpoints |
-| Oversized payloads | 2 — 413 from body > 10 MB; 413 from Content-Length pre-check |
-| Malformed JSON | 3 — 400 on truncated/invalid; 422 on wrong schema |
-| Unsupported schema version | 1 — 422, not 500 |
-| Metrics reliability | 3 — request counting, latency recording, uptime |
-| Data quality flags | 3 — zero features, extreme values, normal features |
-| Request ID header | 4 — present on all GET and POST endpoints |
-| No-label policy | 2 — disclaimer present; forbidden disposition labels absent |
+| Audit log failure | 4  -  OSError absorbed by single and batch endpoints; counter incremented |
+| Degraded mode | 4  -  200/degraded from `/health`; 503 from scoring endpoints |
+| Oversized payloads | 2  -  413 from body > 10 MB; 413 from Content-Length pre-check |
+| Malformed JSON | 3  -  400 on truncated/invalid; 422 on wrong schema |
+| Unsupported schema version | 1  -  422, not 500 |
+| Metrics reliability | 3  -  request counting, latency recording, uptime |
+| Data quality flags | 3  -  zero features, extreme values, normal features |
+| Request ID header | 4  -  present on all GET and POST endpoints |
+| No-label policy | 2  -  disclaimer present; forbidden disposition labels absent |
 
 ### Environment configuration (`.env.example`)
 
@@ -138,7 +138,7 @@ The following guarantee is tested and holds across all 26 operational tests:
 | Finding | Resolution |
 |---------|-----------|
 | `record_batch_score()` was called without a try/except, creating a path where `OSError` in `_emit` could escape `_emit_single_audit()` and reach the ASGI stack | Wrapped in `try/except Exception` with logging and `_metrics.record_audit_failure()` |
-| Uptime test was strict (`> 0`) — `reset()` in the autouse fixture could execute within the same wall-clock second, producing `0.0` | Changed assertion to `>= 0` |
+| Uptime test was strict (`> 0`)  -  `reset()` in the autouse fixture could execute within the same wall-clock second, producing `0.0` | Changed assertion to `>= 0` |
 | No-label policy test did a bare substring check for `"sar"`, which matched the disclaimer text ("does not constitute a SAR filing decision") | Revised test to exclude the `disclaimer` field from forbidden-label checks; the disclaimer's mention of SAR is the desired compliance communication |
 
 ---
@@ -169,7 +169,7 @@ Per Milestone 5 constraints:
 
 ---
 
-## Next steps (not started — Milestone 6 not begun)
+## Next steps (not started  -  Milestone 6 not begun)
 
 1. Wire up GCP secrets (connect `GCP_*` GitHub secrets to a real project).
 2. Add GCP Cloud Monitoring alerting policy for `audit_failures > 0` and

@@ -1,8 +1,8 @@
-# Model Monitoring Specification — AlertIQ AML Alert Triage Scorer
+# Model Monitoring Specification  -  AlertIQ AML Alert Triage Scorer
 
 > **Version:** Milestone 3 (M3)
 > **Effective from:** 2026-09-12
-> **Model:** AlertIQ Triage Scorer v1 — HistGradientBoostingClassifier
+> **Model:** AlertIQ Triage Scorer v1  -  HistGradientBoostingClassifier
 > **Operating mode:** Capacity-ranking (primary); threshold-classification (secondary)
 
 ---
@@ -11,7 +11,7 @@
 
 This document specifies the monitoring obligations, trigger definitions, escalation procedures, and recalibration policies required to operate the AlertIQ Triage Scorer in a supervised deployment. It is not a deployment authorisation; it defines the monitoring regime that must be active during any deployment.
 
-The central risk this regime guards against is **silent model degradation** — a state in which the model continues to produce scores without alerting operators that those scores are no longer ranking SARs effectively.
+The central risk this regime guards against is **silent model degradation**  -  a state in which the model continues to produce scores without alerting operators that those scores are no longer ranking SARs effectively.
 
 ---
 
@@ -36,7 +36,7 @@ The central risk this regime guards against is **silent model degradation** — 
 
 All ten triggers are evaluated on the validation set of each retraining window. Triggers fire when the stated condition is met.
 
-### 3.1 P0 Triggers — Halt Deployment
+### 3.1 P0 Triggers  -  Halt Deployment
 
 P0 triggers indicate the model has failed its minimum performance requirement. **Deployment must halt immediately upon P0 firing. Scores must not be used to prioritise analyst review until the trigger is cleared.**
 
@@ -53,7 +53,7 @@ P0 triggers indicate the model has failed its minimum performance requirement. *
 5. Retrain from updated data with corrected pipeline.
 6. Do not re-deploy until trigger condition clears on validation data.
 
-### 3.2 P1 Triggers — Escalate to Model Risk
+### 3.2 P1 Triggers  -  Escalate to Model Risk
 
 P1 triggers indicate performance is degrading or the score distribution is unstable. **The model may continue operating while investigation is in progress, but investigation must begin within 5 business days.**
 
@@ -64,9 +64,9 @@ P1 triggers indicate performance is degrading or the score distribution is unsta
 | T05 | `ece` | > | 0.05 | Escalate. Apply Platt or isotonic calibration on recent validation data. |
 | T06 | `max_feature_psi` | > | 0.25 | Escalate. Identify shifted features; assess whether retraining is required. |
 
-**T06 — Feature PSI note:** During the M3 evaluation, T06 fired on all three windows because `f23_prior_alerts_90d` (prior alerts in the last 90 days) has a PSI of 14.39. This is a simulator artefact: the feature accumulates monotonically across the training window, generating an extreme PSI value when compared against a fixed historical baseline. In production this feature should be measured against a **rolling 90-day baseline** rather than a fixed historical window. Once correctly baselined, T06 firing on `f23_prior_alerts_90d` alone should not trigger escalation. T06 remains a valid signal for other features.
+**T06  -  Feature PSI note:** During the M3 evaluation, T06 fired on all three windows because `f23_prior_alerts_90d` (prior alerts in the last 90 days) has a PSI of 14.39. This is a simulator artefact: the feature accumulates monotonically across the training window, generating an extreme PSI value when compared against a fixed historical baseline. In production this feature should be measured against a **rolling 90-day baseline** rather than a fixed historical window. Once correctly baselined, T06 firing on `f23_prior_alerts_90d` alone should not trigger escalation. T06 remains a valid signal for other features.
 
-### 3.3 P2 Triggers — Investigate
+### 3.3 P2 Triggers  -  Investigate
 
 P2 triggers are early-warning signals. They do not require immediate escalation but must be logged, reviewed in the next monitoring report, and escalated if they persist across two consecutive windows.
 
@@ -77,7 +77,7 @@ P2 triggers are early-warning signals. They do not require immediate escalation 
 | T09 | `test_sar_rate` | `\|Δ\|` > | `baseline_sar_rate` | 0.03 | Investigate. Alert label shift may indicate process or regulatory change. |
 | T10 | `auc_roc` | `\|Δ\|` > | `prev_auc_roc` | 0.05 | Investigate. Monitor score quality; consider feature monitoring expansion. |
 
-**T08 — Threshold instability note:** The classification threshold varied from 0.056 (Window-1) to 0.253 (Window-3) across the M3 evaluation — a range of 0.198. T08 fired between Window-1 and Window-2 (drift = 0.173). This is not a model defect. It is an expected consequence of using a val-set-derived threshold in a population that changes month to month. The governance response is to **never hard-code a classification threshold**. The threshold must always be set from the current validation period. If T08 fires persistently (>3 consecutive windows), investigate whether score scale is shifting.
+**T08  -  Threshold instability note:** The classification threshold varied from 0.056 (Window-1) to 0.253 (Window-3) across the M3 evaluation  -  a range of 0.198. T08 fired between Window-1 and Window-2 (drift = 0.173). This is not a model defect. It is an expected consequence of using a val-set-derived threshold in a population that changes month to month. The governance response is to **never hard-code a classification threshold**. The threshold must always be set from the current validation period. If T08 fires persistently (>3 consecutive windows), investigate whether score scale is shifting.
 
 ---
 
@@ -85,16 +85,16 @@ P2 triggers are early-warning signals. They do not require immediate escalation 
 
 | Trigger | Status in M3 | Windows Fired | Notes |
 |---|---|---|---|
-| T01 | ✓ Not fired | — | Recall@20% = 1.000 across all windows |
-| T02 | ✓ Not fired | — | AUC-ROC 0.978–0.981 across all windows |
-| T03 | ✓ Not fired | — | |
-| T04 | ✓ Not fired | — | |
-| T05 | ✓ Not fired | — | ECE 0.027–0.038; all below 0.05 |
-| **T06** | **⚠ FIRED (P1)** | **W1, W2, W3** | PSI = 14.39 on `f23_prior_alerts_90d`. Simulator artefact — rolling baseline fix required in production. |
-| T07 | ✓ Not fired | — | |
+| T01 | ✓ Not fired |  -  | Recall@20% = 1.000 across all windows |
+| T02 | ✓ Not fired |  -  | AUC-ROC 0.978–0.981 across all windows |
+| T03 | ✓ Not fired |  -  | |
+| T04 | ✓ Not fired |  -  | |
+| T05 | ✓ Not fired |  -  | ECE 0.027–0.038; all below 0.05 |
+| **T06** | **⚠ FIRED (P1)** | **W1, W2, W3** | PSI = 14.39 on `f23_prior_alerts_90d`. Simulator artefact  -  rolling baseline fix required in production. |
+| T07 | ✓ Not fired |  -  | |
 | **T08** | **⚠ FIRED (P2)** | **W2** | Threshold drift 0.173 (0.056→0.229). Expected; confirms fixed-threshold prohibition. |
-| T09 | ✓ Not fired | — | SAR rate range 9.4–9.9%; well within 3pp band |
-| T10 | ✓ Not fired | — | AUC-ROC range 0.978–0.981 |
+| T09 | ✓ Not fired |  -  | SAR rate range 9.4–9.9%; well within 3pp band |
+| T10 | ✓ Not fired |  -  | AUC-ROC range 0.978–0.981 |
 
 ---
 
@@ -103,9 +103,9 @@ P2 triggers are early-warning signals. They do not require immediate escalation 
 Feature drift is measured using Population Stability Index (PSI) with a fixed January 2023 reference window.
 
 **PSI interpretation:**
-- PSI < 0.10: Stable — no action required
-- 0.10 ≤ PSI < 0.25: Minor shift — log and monitor
-- PSI ≥ 0.25: Significant shift — T06 fires; escalate
+- PSI < 0.10: Stable  -  no action required
+- 0.10 ≤ PSI < 0.25: Minor shift  -  log and monitor
+- PSI ≥ 0.25: Significant shift  -  T06 fires; escalate
 
 ### 5.1 Feature PSI Summary (M3 Evaluation)
 
@@ -128,14 +128,14 @@ Feature drift is measured using Population Stability Index (PSI) with a fixed Ja
 | `f15_night_fraction_30d` | 0.000 | Stable | |
 | `f16_intl_fraction_30d` | 0.022 | Stable | |
 | `f17_distinct_jurisdictions_30d` | 0.155 | Minor | |
-| `f18_very_high_jur_flag` | — | Categorical | |
+| `f18_very_high_jur_flag` |  -  | Categorical | |
 | `f19_shell_counterparty_fraction` | 0.179 | Minor | |
 
 Features with PSI ≥ 0.25 in this evaluation are primarily cumulative rolling window features. In the simulator, these grow monotonically. In production, these should be computed relative to a customer's rolling baseline. The absolute PSI values reported here should not be interpreted as signals of production instability.
 
 ### 5.2 Features Requiring Special Handling in Production
 
-`f23_prior_alerts_90d` — This feature counts prior alert activity in the last 90 days. In the simulator it grows monotonically, producing PSI = 14.39 when compared against a fixed January baseline. In production this feature must be evaluated relative to a rolling institutional baseline (i.e. the PSI reference window should advance in lockstep with the monitoring window).
+`f23_prior_alerts_90d`  -  This feature counts prior alert activity in the last 90 days. In the simulator it grows monotonically, producing PSI = 14.39 when compared against a fixed January baseline. In production this feature must be evaluated relative to a rolling institutional baseline (i.e. the PSI reference window should advance in lockstep with the monitoring window).
 
 Any rolling or cumulative feature (f02, f03, f06, f07, f08, f23) should be evaluated against a rolling reference baseline for PSI purposes. Using a fixed historical baseline will produce inflated PSI values that do not represent genuine distribution shift.
 
@@ -161,7 +161,7 @@ This section governs the secondary (classification) operating mode only. The cap
 
 **Critical rule: No hard-coded thresholds.**
 
-The classification threshold must be recalibrated at every retraining cycle from the current validation set. The threshold observed in M3 ranged from 0.056 to 0.253 across three consecutive windows — a spread of 0.198. Any operational system that hard-codes a threshold from a prior period risks either missing SARs (threshold too high) or generating excessive false positives (threshold too low).
+The classification threshold must be recalibrated at every retraining cycle from the current validation set. The threshold observed in M3 ranged from 0.056 to 0.253 across three consecutive windows  -  a spread of 0.198. Any operational system that hard-codes a threshold from a prior period risks either missing SARs (threshold too high) or generating excessive false positives (threshold too low).
 
 **Recalibration procedure:**
 1. After retraining, generate scores on the validation set.
@@ -220,8 +220,8 @@ Stress tests should be re-run at every major retraining cycle (minimum quarterly
 | S01 Volume surge | Recall@20% < 0.90 or ΔRecall@20% < −0.10 |
 | S02 New jurisdiction | Recall@20% < 0.90 or ΔRecall@20% < −0.10 |
 | S03 Missing features (30%) | Recall@20% < 0.80 or ΔRecall@20% < −0.20 |
-| S04 Rule shift (R08 removed) | No threshold — structural scenario, document delta |
-| S05 Novel typology | No threshold — degradation expected, document delta |
+| S04 Rule shift (R08 removed) | No threshold  -  structural scenario, document delta |
+| S05 Novel typology | No threshold  -  degradation expected, document delta |
 | S06 SAR rate collapse | Recall@20% < 0.90 |
 
 **M3 baseline stress results (Window-3):**
@@ -232,7 +232,7 @@ Stress tests should be re-run at every major retraining cycle (minimum quarterly
 - S05: ΔRecall = −0.788, ΔAUC = −0.088 (expected OOD degradation; model correctly signals unfamiliar pattern)
 - S06: ΔRecall = 0.000, ΔAUC = +0.007 (robust)
 
-**S03 note:** Missing features (30% of values zeroed) produces a Recall@20% of 0.907 — below the 1.000 baseline but above the 0.80 concern threshold. Data quality monitoring is required in production. Any feature pipeline failure that produces high rates of missing or zeroed values must trigger immediate investigation.
+**S03 note:** Missing features (30% of values zeroed) produces a Recall@20% of 0.907  -  below the 1.000 baseline but above the 0.80 concern threshold. Data quality monitoring is required in production. Any feature pipeline failure that produces high rates of missing or zeroed values must trigger immediate investigation.
 
 ---
 
@@ -275,8 +275,8 @@ The model should be considered for retirement when any of the following are obse
 - **P0 trigger fires and cannot be cleared** after one full retraining cycle with a corrected pipeline.
 - **Typology gate failures expand** to include rule groups that previously passed, with no clear data-quality explanation.
 - **S03 (missing features) stress Recall@20% falls below 0.70**, suggesting the feature pipeline has degraded to the point where robustness assumptions no longer hold.
-- **Production typology distribution changes substantially** — a new rule group accounting for > 20% of alerts and not represented in training is introduced. In this case the model should be considered out-of-distribution until retrained on the new typology.
-- **Structural business change** — e.g. regulatory reporting requirements change the definition of SAR, making historical labels invalid.
+- **Production typology distribution changes substantially**  -  a new rule group accounting for > 20% of alerts and not represented in training is introduced. In this case the model should be considered out-of-distribution until retrained on the new typology.
+- **Structural business change**  -  e.g. regulatory reporting requirements change the definition of SAR, making historical labels invalid.
 
 ---
 

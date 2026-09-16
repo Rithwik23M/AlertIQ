@@ -1,19 +1,19 @@
-# AlertIQ — Milestone 2 Completion Report
+# AlertIQ  -  Milestone 2 Completion Report
 ## AML Alert Triage Engine: Baseline + ML Evaluation
 
 **Date:** 2026-09-12  
 **Author:** ApexForge Labs  
-**Status:** COMPLETE — All acceptance criteria passed. Devil Mode review complete.
+**Status:** COMPLETE  -  All acceptance criteria passed. Devil Mode review complete.
 
 ---
 
-## Item 1 — Problem Statement and Hypothesis
+## Item 1  -  Problem Statement and Hypothesis
 
-**SAR workflow note.** AlertIQ is a prioritisation system, not a decision system. The model assigns a risk score; the analyst investigates the alert; the analyst (not the model) decides whether to escalate, close, or file. "Caught SARs" in this document means "surfaced in the analyst's review queue within their capacity window" — whether a SAR filing actually results depends on subsequent human investigation and legal judgment.
+**SAR workflow note.** AlertIQ is a prioritisation system, not a decision system. The model assigns a risk score; the analyst investigates the alert; the analyst (not the model) decides whether to escalate, close, or file. "Caught SARs" in this document means "surfaced in the analyst's review queue within their capacity window"  -  whether a SAR filing actually results depends on subsequent human investigation and legal judgment.
 
 **Problem.** A Transaction Monitoring System (TMS) fires approximately 11,000 alerts per 60-day period for a mid-tier financial institution. At ~9.5% true SAR rate (from simulator ground truth), analysts must manually review all alerts. At 0.5 hours per alert and 6 productive hours per analyst-day, full review of the holdout period requires **~926 analyst-days**. The institution can realistically dedicate capacity to review 20% of alerts per cycle.
 
-**Baseline (H₀).** Random triage (no prioritisation): analysts review alerts in arbitrary order. At 20% capacity, they surface ~20% of simulator-labelled SARs by chance — equivalent to no system at all.
+**Baseline (H₀).** Random triage (no prioritisation): analysts review alerts in arbitrary order. At 20% capacity, they surface ~20% of simulator-labelled SARs by chance  -  equivalent to no system at all.
 
 **Hypothesis (H₁).** A gradient-boosted classifier trained on behavioural transaction features, using proper temporal splitting and F1-optimised threshold selection, can concentrate simulator-labelled SARs in the top-reviewed fraction, achieving Recall@20% > 0.45 and AUC-ROC > 0.72.
 
@@ -21,21 +21,21 @@
 
 ---
 
-## Item 2 — Baseline Ladder
+## Item 2  -  Baseline Ladder
 
 | Level | Method | Rationale |
 |-------|--------|-----------|
-| 0 — Naive | Random ordering (RandomScorer) | No system; catches SARs at base rate |
-| 1 — Heuristic | Severity-based ranking (SeverityScorer) | Simple rule already available from TMS |
-| 2 — Statistical | *(not implemented; SAR rate is too low for pure statistical thresholds)* | — |
-| 3 — ML | HistGradientBoostingClassifier (HistGBM) | Trained model with 24 behavioural features |
-| 4 — Advanced | *(not implemented; Level 3 is evaluated first per evidence-first discipline)* | — |
+| 0  -  Naive | Random ordering (RandomScorer) | No system; catches SARs at base rate |
+| 1  -  Heuristic | Severity-based ranking (SeverityScorer) | Simple rule already available from TMS |
+| 2  -  Statistical | *(not implemented; SAR rate is too low for pure statistical thresholds)* |  -  |
+| 3  -  ML | HistGradientBoostingClassifier (HistGBM) | Trained model with 24 behavioural features |
+| 4  -  Advanced | *(not implemented; Level 3 is evaluated first per evidence-first discipline)* |  -  |
 
 The principle: a simpler method wins if it is competitive. Level 3 is justified only after proving Levels 0 and 1 are insufficient.
 
 ---
 
-## Item 3 — Acceptance Criteria
+## Item 3  -  Acceptance Criteria
 
 | Criterion | Threshold | Result | Status |
 |-----------|-----------|--------|--------|
@@ -47,7 +47,7 @@ The principle: a simpler method wins if it is competitive. Level 3 is justified 
 
 ---
 
-## Item 4 — Temporal Split Integrity and Leakage Guard
+## Item 4  -  Temporal Split Integrity and Leakage Guard
 
 **Split.** All splits are by calendar date boundaries, not row index. This prevents any future-date data from appearing in training.
 
@@ -60,10 +60,10 @@ The principle: a simpler method wins if it is competitive. Level 3 is justified 
 **Holdout was never seen during any training or threshold-selection step.**
 
 **Leakage guard (`_LEAKAGE_COLUMNS`).** The following columns cannot appear as model features:
-- `true_sar` — the label itself
-- `triggered_by_typology_txn` — another label proxy
-- `account_id`, `alert_id` — identifiers, not behaviour signals
-- `status` — post-alert outcome, unknown at alert time
+- `true_sar`  -  the label itself
+- `triggered_by_typology_txn`  -  another label proxy
+- `account_id`, `alert_id`  -  identifiers, not behaviour signals
+- `status`  -  post-alert outcome, unknown at alert time
 
 `AlertDataset._load_and_validate()` raises `ValueError` at construction time if any configured feature column matches a leakage column or is absent from the CSV. This is verified by two dedicated tests.
 
@@ -75,7 +75,7 @@ The principle: a simpler method wins if it is competitive. Level 3 is justified 
 
 ---
 
-## Item 5 — Data Statistics
+## Item 5  -  Data Statistics
 
 | Statistic | Value |
 |-----------|-------|
@@ -90,7 +90,7 @@ The principle: a simpler method wins if it is competitive. Level 3 is justified 
 
 ---
 
-## Item 6 — Training Protocol
+## Item 6  -  Training Protocol
 
 **Phase 1 (discovery).** Train HistGradientBoostingClassifier on the training split with early stopping. An internal 10% holdout of the training set is used for early stopping; early stopping fires when validation loss does not improve for 20 consecutive iterations.
 
@@ -107,11 +107,11 @@ The principle: a simpler method wins if it is competitive. Level 3 is justified 
 
 ---
 
-## Item 7 — Operating Modes and Threshold Selection
+## Item 7  -  Operating Modes and Threshold Selection
 
 ### Primary operating mode: Capacity-ranking
 
-AlertIQ's PRIMARY operating policy is capacity-ranking: analysts work through alerts sorted by descending model score and stop at their capacity limit (e.g. 20% of the queue). The model is evaluated on **Recall@K** — fraction of true SARs surfaced within the top-K reviewed alerts. No probability threshold is involved in this mode.
+AlertIQ's PRIMARY operating policy is capacity-ranking: analysts work through alerts sorted by descending model score and stop at their capacity limit (e.g. 20% of the queue). The model is evaluated on **Recall@K**  -  fraction of true SARs surfaced within the top-K reviewed alerts. No probability threshold is involved in this mode.
 
 ### Secondary/diagnostic mode: Classification
 
@@ -134,7 +134,7 @@ Selected threshold: 0.1153 (vs naive 0.5)
 
 ---
 
-## Item 8 — Holdout Metric Results
+## Item 8  -  Holdout Metric Results
 
 ### Threshold-Free Ranking Quality (applies to both modes)
 
@@ -143,24 +143,24 @@ Selected threshold: 0.1153 (vs naive 0.5)
 | AUC-ROC | 0.509 | 0.564 | **0.979** | +0.415 |
 | AUC-PR | 0.098 | 0.238 | **0.774** | +0.536 |
 
-### Classification Mode — Diagnostic (hard binary predictions at fixed threshold)
+### Classification Mode  -  Diagnostic (hard binary predictions at fixed threshold)
 
 *These metrics describe performance when using the F1-optimal threshold as a binary classifier.  
 This is NOT the primary operating policy. Recall=0.975 below is the fraction of SARs flagged  
-by the binary classifier — it is NOT the same as Recall@20% (the primary capacity-ranking metric).*
+by the binary classifier  -  it is NOT the same as Recall@20% (the primary capacity-ranking metric).*
 
 | Metric | Random | Severity | HistGBM | HistGBM vs Severity |
 |--------|--------|----------|---------|---------------------|
-| Threshold | 0.5 | 0.5 | **0.1153** | — |
+| Threshold | 0.5 | 0.5 | **0.1153** |  -  |
 | Precision | 0.097 | 0.095 | **0.693** | +0.598 |
 | Recall (cls) | 0.511 | 1.000 | **0.975** | -0.025 |
 | F1 | 0.163 | 0.174 | **0.810** | +0.636 |
 | FPR | 0.499 | 1.000 | **0.045** | -0.955 |
 | FNR | 0.489 | 0.000 | **0.025** | +0.025 |
 
-*Note: SeverityScorer at p=0.5 flags every alert (all positives), giving recall=1.0 but FPR=1.0 — operationally unusable.*
+*Note: SeverityScorer at p=0.5 flags every alert (all positives), giving recall=1.0 but FPR=1.0  -  operationally unusable.*
 
-### Confusion Matrix (HistGBM — Classification Mode @ threshold=0.1153)
+### Confusion Matrix (HistGBM  -  Classification Mode @ threshold=0.1153)
 
 |  | Predicted Negative | Predicted Positive |
 |--|-------------------|-------------------|
@@ -169,7 +169,7 @@ by the binary classifier — it is NOT the same as Recall@20% (the primary capac
 
 ---
 
-## Item 9 — Capacity-Ranking Mode: Precision@K and Recall@K (PRIMARY)
+## Item 9  -  Capacity-Ranking Mode: Precision@K and Recall@K (PRIMARY)
 
 **This is the primary operating mode.** These metrics measure what happens if analysts work through the alert queue sorted by descending model score and stop at capacity limit K. No probability threshold is applied. The primary acceptance criterion (Recall@20% > 0.45) comes from this section.
 
@@ -186,7 +186,7 @@ Do NOT conflate Recall@K with the classification-mode recall in Item 8. They mea
 | 30% | 3,335 | **1.000** | 0.412 | 0.309 |
 | 50% | 5,559 | **1.000** | 0.554 | 0.511 |
 
-**Key finding.** At 20% capacity (2,223 alerts reviewed), HistGBM achieves 100% recall — all 1,057 true SARs surface in the top-ranked 20% of alerts. Severity ranking only catches 34.8% at the same effort level.
+**Key finding.** At 20% capacity (2,223 alerts reviewed), HistGBM achieves 100% recall  -  all 1,057 true SARs surface in the top-ranked 20% of alerts. Severity ranking only catches 34.8% at the same effort level.
 
 **SARs found per 100 alerts reviewed (HistGBM):**
 - @10%: 68.3 SARs per 100 reviewed
@@ -195,7 +195,7 @@ Do NOT conflate Recall@K with the classification-mode recall in Item 8. They mea
 
 ---
 
-## Item 10 — Operational Consequence Translation
+## Item 10  -  Operational Consequence Translation
 
 All figures are **simulated** from the following operational assumptions (not validated against a specific institution's workforce data):
 
@@ -216,15 +216,15 @@ All figures are **simulated** from the following operational assumptions (not va
 | FPs per TP found | 9.39 | 5.04 | **1.10** |
 | Missed SAR rate | 79.8% | 65.2% | **0.0%** |
 
-**Interpretation.** HistGBM finds every SAR in the period while reviewing only 20% of alerts. The cost is 3,225.5 analyst-hours vs 1,539.5 for random — but random misses 843 SARs. HistGBM trades additional SAR-filing labour for near-zero missed SARs, which is the correct trade-off for AML compliance.
+**Interpretation.** HistGBM finds every SAR in the period while reviewing only 20% of alerts. The cost is 3,225.5 analyst-hours vs 1,539.5 for random  -  but random misses 843 SARs. HistGBM trades additional SAR-filing labour for near-zero missed SARs, which is the correct trade-off for AML compliance.
 
 *The SAR filing hours dominate because finding all SARs means filing 1,057 × 2h = 2,114h of reports. This is a feature, not a bug: the system is working.*
 
 ---
 
-## Item 11 — FP/FN Error Analysis
+## Item 11  -  FP/FN Error Analysis
 
-### False Negatives (26 missed SARs) — HistGBM
+### False Negatives (26 missed SARs)  -  HistGBM
 
 | Account | Missed SARs |
 |---------|-------------|
@@ -234,14 +234,14 @@ All figures are **simulated** from the following operational assumptions (not va
 
 **Finding.** 73% of missed SARs belong to a single account (ACC000287). This account's behaviour patterns are likely atypical in a way not well represented in training data. In production, this would warrant a rule-based override or account-level watchlist.
 
-**FN score distribution.** Mean probability of missed SARs: 0.070. These are cases where the model assigned low risk scores — systematic misclassification rather than borderline errors.
+**FN score distribution.** Mean probability of missed SARs: 0.070. These are cases where the model assigned low risk scores  -  systematic misclassification rather than borderline errors.
 
 **FN by TMS rule:**
 - R08: 8 missed | R15: 7 missed | R09, R06: 2 each | R01, R02, R04, R12: 1 each
 
-### False Positives (457 unnecessary flags) — HistGBM
+### False Positives (457 unnecessary flags)  -  HistGBM
 
-**FP score distribution.** Mean probability: 0.756, median: 0.834. These are high-confidence false alarms — the model is not borderline uncertain but is genuinely confused about certain non-SAR patterns.
+**FP score distribution.** Mean probability: 0.756, median: 0.834. These are high-confidence false alarms  -  the model is not borderline uncertain but is genuinely confused about certain non-SAR patterns.
 
 **FP by TMS rule (top 3):**
 - R08: 283 FPs (largest contributor)
@@ -249,14 +249,14 @@ All figures are **simulated** from the following operational assumptions (not va
 - R06: 35 FPs
 
 **FP by severity:**
-- High: 441 (96.5%) — most FPs are from high-severity alerts, suggesting the severity signal is noisy for this class
+- High: 441 (96.5%)  -  most FPs are from high-severity alerts, suggesting the severity signal is noisy for this class
 
 **Severity-scored baseline FP by severity for comparison:**
-- High: 9,903 — HistGBM reduces high-severity FPs by 95.5%
+- High: 9,903  -  HistGBM reduces high-severity FPs by 95.5%
 
 ---
 
-## Item 12 — Feature Importance Analysis
+## Item 12  -  Feature Importance Analysis
 
 ### Permutation Importance (AUC-ROC scoring on holdout)
 
@@ -268,27 +268,27 @@ All figures are **simulated** from the following operational assumptions (not va
 | 4 | f04_max_txn_log | +0.00221 |
 | 5 | f10_account_age_days | +0.00187 |
 
-**Observation.** Several features show negative permutation importance (`f23_prior_alerts_90d`, `f12_structuring_count_30d`, `f13_round_amount_count_30d`). Negative values arise from multicollinearity — permuting one correlated feature may increase model noise. These features may still contribute via their correlated counterparts. In production, a SHAP analysis would clarify.
+**Observation.** Several features show negative permutation importance (`f23_prior_alerts_90d`, `f12_structuring_count_30d`, `f13_round_amount_count_30d`). Negative values arise from multicollinearity  -  permuting one correlated feature may increase model noise. These features may still contribute via their correlated counterparts. In production, a SHAP analysis would clarify.
 
 **Note on MDI vs permutation importance.** MDI (mean decrease in impurity, computed from tree node gains) is biased toward high-cardinality continuous features. Permutation importance, computed on the holdout set, is a more reliable estimate of true predictive value. Both are exported.
 
 ---
 
-## Item 13 — Reproducibility Guarantee
+## Item 13  -  Reproducibility Guarantee
 
 | Control | Implementation |
 |---------|---------------|
 | Global seed | `TriageConfig.seed=42`; passed to `random_state=` on all stochastic objects |
 | NumPy RNG | `np.random.default_rng(seed)` with explicit seed in all test fixtures |
 | sklearn RNG | `random_state=self._config.seed` on HistGBM and permutation importance |
-| Config freeze | `TriageConfig` is a frozen Pydantic model — no field can be mutated after construction |
+| Config freeze | `TriageConfig` is a frozen Pydantic model  -  no field can be mutated after construction |
 | Experiment config | Full hyperparameters and seed captured in `data/experiment/results.json` |
 
 **Test verification:** `TestTriageScorerScoring::test_reproducibility_across_runs` confirms two independently constructed scorers with the same config produce byte-identical probability arrays (decimal=6 tolerance).
 
 ---
 
-## Item 14 — Test Coverage Summary
+## Item 14  -  Test Coverage Summary
 
 **Total tests: 81 | Passed: 81 | Failed: 0**
 
@@ -319,9 +319,9 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-## Item 15 — Architecture Decision Records
+## Item 15  -  Architecture Decision Records
 
-### ADR-01: Algorithm Choice — HistGBM over LightGBM
+### ADR-01: Algorithm Choice  -  HistGBM over LightGBM
 
 **Context.** LightGBM is the industry-standard choice for tabular gradient boosting. pip installation failed in this execution environment (wheel unavailable).
 
@@ -329,13 +329,13 @@ All figures are **simulated** from the following operational assumptions (not va
 
 **Important accuracy caveat.** HistGradientBoostingClassifier and LightGBM are distinct implementations. They differ in gradient estimation details, tree growth heuristics, bin construction, and threading. Results from HistGBM are **not** guaranteed to reproduce under LightGBM. The two libraries use different hyperparameter names (e.g. `n_iter_no_change` ↔ `early_stopping_rounds`, `max_leaf_nodes` ↔ `num_leaves`). If the environment changes, hyperparameter equivalences must be verified and the full evaluation must be re-run on the holdout set before claiming comparable performance.
 
-**Reversal cost.** Moderate — requires environment setup, hyperparameter re-mapping, re-evaluation, and update of all reproducibility documentation.
+**Reversal cost.** Moderate  -  requires environment setup, hyperparameter re-mapping, re-evaluation, and update of all reproducibility documentation.
 
 ---
 
 ### ADR-02: Two-Phase Training Protocol
 
-**Context.** Validation data is labelled — discarding it for evaluation wastes signal. But using it for training corrupts the evaluation split.
+**Context.** Validation data is labelled  -  discarding it for evaluation wastes signal. But using it for training corrupts the evaluation split.
 
 **Decision.** Phase 1 on train only (early stopping + threshold selection on val). Phase 2 refit on train+val with `max_iter=best_iter` (early stopping disabled).
 
@@ -363,9 +363,9 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-## Item 16 — Devil Mode Review (6 Perspectives)
+## Item 16  -  Devil Mode Review (6 Perspectives)
 
-### 16a — Staff Engineer
+### 16a  -  Staff Engineer
 
 **Findings:**
 
@@ -381,7 +381,7 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-### 16b — Data Scientist
+### 16b  -  Data Scientist
 
 **Findings:**
 
@@ -397,13 +397,13 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-### 16c — Fraud/AML Analyst
+### 16c  -  Fraud/AML Analyst
 
 **Findings:**
 
-**[HIGH] Account ACC000287 accounts for 73% of false negatives.** 19 of 26 missed SARs belong to a single account. This indicates a systematic blind spot — the account's transaction patterns are outside the training distribution or represent a novel typology. In production, this account would require manual watchlist escalation. The system must include account-level override rules.
+**[HIGH] Account ACC000287 accounts for 73% of false negatives.** 19 of 26 missed SARs belong to a single account. This indicates a systematic blind spot  -  the account's transaction patterns are outside the training distribution or represent a novel typology. In production, this account would require manual watchlist escalation. The system must include account-level override rules.
 
-**[MEDIUM] FP score distribution is concentrated at high confidence (mean 0.756).** The 457 false positive alerts are not borderline cases — the model is confidently wrong. This is harder to address post-training and suggests some account or rule patterns are genuinely ambiguous. Rule R08 produces 283 of 457 FPs — this rule may need feature engineering specific to its typology.
+**[MEDIUM] FP score distribution is concentrated at high confidence (mean 0.756).** The 457 false positive alerts are not borderline cases  -  the model is confidently wrong. This is harder to address post-training and suggests some account or rule patterns are genuinely ambiguous. Rule R08 produces 283 of 457 FPs  -  this rule may need feature engineering specific to its typology.
 
 **[MEDIUM] No integration with the analyst feedback loop.** In a real deployment, analyst decisions (close alert / file SAR / escalate) would be captured and used to continuously improve the model. This is not implemented.
 
@@ -413,7 +413,7 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-### 16d — QA Engineer
+### 16d  -  QA Engineer
 
 **Findings:**
 
@@ -427,7 +427,7 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-### 16e — Security Engineer
+### 16e  -  Security Engineer
 
 **Findings:**
 
@@ -443,7 +443,7 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-### 16f — Model Risk Reviewer
+### 16f  -  Model Risk Reviewer
 
 **Findings:**
 
@@ -455,13 +455,13 @@ All figures are **simulated** from the following operational assumptions (not va
 
 **[MEDIUM] No model card.** A production model requires a model card documenting: intended use, out-of-scope uses, training data characteristics, known failure modes, evaluation results, fairness considerations. The completion report partially serves this function but a standalone model card is required for production governance.
 
-**[LOW] Feature importance instability.** Permutation importance results show near-zero values for many features and negative values for several. This indicates the model may not have stable feature attribution — small perturbations to the training set could substantially change which features appear important.
+**[LOW] Feature importance instability.** Permutation importance results show near-zero values for many features and negative values for several. This indicates the model may not have stable feature attribution  -  small perturbations to the training set could substantially change which features appear important.
 
 **Fixes applied:** AUC-ROC caveat is the primary item in limitations (Item 18). Production deployment roadmap notes walk-forward evaluation and model card as prerequisites. All findings are documented but not blocking: Milestone 2 is an experimental evaluation, not a production deployment.
 
 ---
 
-## Item 17 — Confirmed Results vs Baseline
+## Item 17  -  Confirmed Results vs Baseline
 
 **Central claim:**
 
@@ -475,7 +475,7 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ---
 
-## Item 18 — Limitations and Known Issues
+## Item 18  -  Limitations and Known Issues
 
 ### Critical Limitations
 
@@ -491,19 +491,19 @@ All figures are **simulated** from the following operational assumptions (not va
 
 ### Non-Critical Limitations
 
-6. Permutation importance shows instability (many near-zero or negative values) — likely multicollinearity in feature set.
-7. No SAR filing feedback loop — analyst outcomes are not captured for active learning.
-8. No model calibration — probability outputs are not well-calibrated; threshold should be recalibrated periodically.
-9. Path traversal protection not implemented — required before multi-tenant deployment.
+6. Permutation importance shows instability (many near-zero or negative values)  -  likely multicollinearity in feature set.
+7. No SAR filing feedback loop  -  analyst outcomes are not captured for active learning.
+8. No model calibration  -  probability outputs are not well-calibrated; threshold should be recalibrated periodically.
+9. Path traversal protection not implemented  -  required before multi-tenant deployment.
 10. Account IDs in `results.json` should be pseudonymised in production.
 
 ---
 
-## Item 19 — Milestone Story
+## Item 19  -  Milestone Story
 
-> "We discovered that AML alert triage at the current TMS SAR rate (~9.5%) requires analysts to review every alert to achieve reasonable SAR detection — an operationally unsustainable baseline consuming ~1,279 analyst-days per 60-day cycle.
+> "We discovered that AML alert triage at the current TMS SAR rate (~9.5%) requires analysts to review every alert to achieve reasonable SAR detection  -  an operationally unsustainable baseline consuming ~1,279 analyst-days per 60-day cycle.
 >
-> The existing approach (severity-based triage) catches only 34.8% of SARs within 20% analyst capacity — better than random (20.2%) but insufficient for regulatory expectations.
+> The existing approach (severity-based triage) catches only 34.8% of SARs within 20% analyst capacity  -  better than random (20.2%) but insufficient for regulatory expectations.
 >
 > We believed that a gradient-boosted classifier trained on 24 behavioural transaction features, using temporal splitting and F1-optimal threshold selection, could concentrate SARs in the top-reviewed fraction.
 >
@@ -511,7 +511,7 @@ All figures are **simulated** from the following operational assumptions (not va
 >
 > We evaluated it on an untouched 60-day holdout using AUC-ROC, Precision/Recall@K (10–100% capacity), and simulated analyst-hours.
 >
-> Against the severity baseline, it achieved AUC-ROC 0.979 vs 0.564 (+0.415) and Recall@20%=1.0 vs 0.348 (+0.652). At 20% analyst capacity, HistGBM recovers all 1,057 true SARs vs 368 for severity-based triage — a 2.87× improvement.
+> Against the severity baseline, it achieved AUC-ROC 0.979 vs 0.564 (+0.415) and Recall@20%=1.0 vs 0.348 (+0.652). At 20% analyst capacity, HistGBM recovers all 1,057 true SARs vs 368 for severity-based triage  -  a 2.87× improvement.
 >
 > The primary limitation is simulator fidelity: AUC-ROC of 0.979 reflects a dataset where features encode SAR risk by construction. Real-world performance should be estimated via walk-forward backtesting on institutional data.
 >

@@ -1,4 +1,4 @@
-# AlertIQ — CI/CD Pipeline Reference
+# AlertIQ  -  CI/CD Pipeline Reference
 
 AlertIQ uses GitHub Actions for automated testing, security scanning, and deployment.
 The pipeline is designed to be fail-fast, cheap to run, and safe for an AML compliance product.
@@ -65,7 +65,7 @@ Triggers on every push to any branch and on pull requests targeting main.
 
 Depends on `quality`. Runs all tests in two invocations:
 
-**Tier 1 & 2** — Unit and integration tests:
+**Tier 1 & 2**  -  Unit and integration tests:
 ```
 python -m pytest tests/ --ignore=tests/operational \
     --cov=alertiq --cov-fail-under=70
@@ -73,7 +73,7 @@ python -m pytest tests/ --ignore=tests/operational \
 
 Tests use synthetic in-memory fixtures (`tests/serving/conftest.py` trains a `TriageScorer` on numpy arrays). No `alerts.csv` or pre-trained artifact is required in CI.
 
-**Tier 3** — Operational failure-mode tests:
+**Tier 3**  -  Operational failure-mode tests:
 ```
 python -m pytest tests/operational/
 ```
@@ -97,7 +97,7 @@ The security report is uploaded as a GitHub Actions artifact (`security-report-<
 
 ### Job: `build`
 
-Depends on **both** `test` and `security`. Only proceeds if both pass — a broken or vulnerable image is never built.
+Depends on **both** `test` and `security`. Only proceeds if both pass  -  a broken or vulnerable image is never built.
 
 Builds the Docker image using layer caching from the GitHub Actions cache. Does **not** push the image (push is handled by the CD workflow on `main` only).
 
@@ -148,7 +148,7 @@ Artifact Registry is in the same GCP project and region as Cloud Run, which:
 - Allows Cloud Run to pull images using the same WIF service account
 - Avoids cross-region egress costs
 
-SHA tags are immutable — a re-push to the same tag is rejected. Only SHA tags are used for deployment and rollback. `latest` is used only for build-cache warming.
+SHA tags are immutable  -  a re-push to the same tag is rejected. Only SHA tags are used for deployment and rollback. `latest` is used only for build-cache warming.
 
 ### Deployment traceability
 

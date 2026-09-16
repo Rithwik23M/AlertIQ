@@ -1,7 +1,7 @@
-# AlertIQ — Model Lineage Record
+# AlertIQ  -  Model Lineage Record
 
 **Document type:** Model lineage and training provenance  
-**Created:** 2026-09-13 (M6.1 — Investigation Integrity Hardening)
+**Created:** 2026-09-13 (M6.1  -  Investigation Integrity Hardening)
 
 ---
 
@@ -36,7 +36,7 @@
 | Temporal boundary (train/val) | 2023-01-01 → 2023-05-23 |
 | Temporal boundary (holdout) | 2023-05-24 → 2023-06-30 |
 
-**Training/serving population drift:** The current on-disk `alerts.csv` is v3 (55,896 rows, SHA `3ae95fb5`) — a re-simulation of the same parameters. Row count differs by 299 (0.53%). All 300 accounts are present in both versions. Features are computed from the same simulation logic. This drift does not invalidate the model but is a known limitation of environment-sensitive synthetic data. See `DATA_PROVENANCE.md` for version history.
+**Training/serving population drift:** The current on-disk `alerts.csv` is v3 (55,896 rows, SHA `3ae95fb5`)  -  a re-simulation of the same parameters. Row count differs by 299 (0.53%). All 300 accounts are present in both versions. Features are computed from the same simulation logic. This drift does not invalidate the model but is a known limitation of environment-sensitive synthetic data. See `DATA_PROVENANCE.md` for version history.
 
 ---
 
@@ -46,8 +46,8 @@
 |-----------|--------|--------------|---------------|
 | M4 | Train and register champion | 1.0.0 (new) | alerts.csv v1 (56,195 rows) |
 | M5 | Deploy serving API | 1.0.0 (loaded) | No change |
-| M6 | Build investigation workspace | 1.0.0 (loaded) | No change — scored on alerts.csv v3 (55,896 rows) |
-| M6.1 | Integrity hardening | 1.0.0 (loaded) | No change — re-seeded store from alerts.csv v3 |
+| M6 | Build investigation workspace | 1.0.0 (loaded) | No change  -  scored on alerts.csv v3 (55,896 rows) |
+| M6.1 | Integrity hardening | 1.0.0 (loaded) | No change  -  re-seeded store from alerts.csv v3 |
 
 **Finding:** AlertIQ has had exactly one model training run, producing version 1.0.0. No retraining, fine-tuning, or version bump has occurred since M4.
 
@@ -57,7 +57,7 @@
 
 M6 (Analyst Investigation Workspace) added investigation UI and API routes. Retraining during serving is prohibited by ADR-M4-05, which establishes:
 
-> *"Model version promotion must be decoupled from feature releases. The serving layer loads a registered champion artifact. Retraining requires a new experiment, a new registered version, champion/challenger evaluation, and explicit promotion — not an implicit side effect of UI work."*
+> *"Model version promotion must be decoupled from feature releases. The serving layer loads a registered champion artifact. Retraining requires a new experiment, a new registered version, champion/challenger evaluation, and explicit promotion  -  not an implicit side effect of UI work."*
 
 There was no business or technical trigger for retraining in M6. The model was loaded unchanged from `models/1.0.0/model.joblib`.
 
@@ -88,7 +88,7 @@ There was no business or technical trigger for retraining in M6. The model was l
 
 ## 6. Threshold Derivation
 
-The threshold `0.3972` is derived by capacity ranking, not a fixed prior. At training time, the threshold is set to the score at the 80th percentile of the validation set — i.e., the score that places 20% of alerts above it. This ensures the top-20% priority band is maintained regardless of score distribution drift.
+The threshold `0.3972` is derived by capacity ranking, not a fixed prior. At training time, the threshold is set to the score at the 80th percentile of the validation set  -  i.e., the score that places 20% of alerts above it. This ensures the top-20% priority band is maintained regardless of score distribution drift.
 
 At seed time, the seed script applies this threshold to the full alerts population to identify the capacity band (100 of 500 sampled alerts in the top-20% band for the demo dataset).
 
@@ -102,8 +102,8 @@ Each alert record in the investigation store includes:
 |-------|---------|
 | `risk_score` | The calibrated probability at scoring time |
 | `scored_at` | UTC timestamp of the scoring run |
-| `model_version` | `"1.0.0"` — pinned at seed time |
-| `schema_version` | `1` — feature schema version used |
+| `model_version` | `"1.0.0"`  -  pinned at seed time |
+| `schema_version` | `1`  -  feature schema version used |
 
 These fields are written once at seed time by `seed_alert_store.py` and are **never updated by the investigation API**. The `upsert_alert()` function will overwrite them if the seed is re-run, but no API route (GET or POST) modifies `risk_score`, `scored_at`, or `model_version`.
 
@@ -129,7 +129,7 @@ At M4, the registry was designed to support champion/challenger evaluation. At M
 
 | Control | Status |
 |---------|--------|
-| `true_sar` ground truth never returned by API | ✅ Verified — not present in any GET response |
+| `true_sar` ground truth never returned by API | ✅ Verified  -  not present in any GET response |
 | Scoring snapshot immutable after investigation opens | ✅ No API route modifies risk_score |
 | No automatic retraining from analyst decisions | ✅ `decisions` table is not read by any model training path |
 | Model cannot select analyst decision automatically | ✅ No auto-decision logic in serving layer |

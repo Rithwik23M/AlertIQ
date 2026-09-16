@@ -1,6 +1,6 @@
 # AlertIQ
 
-**AML Alert Triage Engine — adaptive prioritisation for financial crime investigation**
+**AML Alert Triage Engine  -  adaptive prioritisation for financial crime investigation**
 
 [![CI](https://github.com/rithwikm7/alertiq/actions/workflows/ci.yml/badge.svg)](https://github.com/rithwikm7/alertiq/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
@@ -10,9 +10,9 @@
 
 ## What is AlertIQ?
 
-Banks generate thousands of Anti-Money Laundering (AML) alerts daily. Investigators can realistically review only a fraction of them — typically 15–25% of the queue. Every unreviewed alert above that threshold is ignored by default, regardless of actual risk.
+Banks generate thousands of Anti-Money Laundering (AML) alerts daily. Investigators can realistically review only a fraction of them  -  typically 15–25% of the queue. Every unreviewed alert above that threshold is ignored by default, regardless of actual risk.
 
-AlertIQ is a triage engine that **ranks alerts by estimated SAR probability** so that investigators working through a sorted queue catch the most suspicious activity within their capacity limit. It also provides a full **investigation workspace** — transaction history, risk explainability signals, note-taking, and audit-logged decisions.
+AlertIQ is a triage engine that **ranks alerts by estimated SAR probability** so that investigators working through a sorted queue catch the most suspicious activity within their capacity limit. It also provides a full **investigation workspace**  -  transaction history, risk explainability signals, note-taking, and audit-logged decisions.
 
 > **Data disclosure:** AlertIQ was built on a purpose-built transaction simulator with 55,896 alerts and 191,364 transactions across 3,000 simulated accounts. All data is synthetic. Performance figures are from held-out test data and are not comparable to production AML system benchmarks.
 
@@ -22,8 +22,8 @@ AlertIQ is a triage engine that **ranks alerts by estimated SAR probability** so
 
 | Without triage | With AlertIQ |
 |---|---|
-| Investigators review alerts in arbitrary order | Investigators work a ranked queue — highest-risk first |
-| A 20% capacity limit means 80% of alerts are missed uniformly | A 20% capacity limit reviewed the top-ranked 20% — catching **100% of true SARs** on held-out data (simulated) |
+| Investigators review alerts in arbitrary order | Investigators work a ranked queue  -  highest-risk first |
+| A 20% capacity limit means 80% of alerts are missed uniformly | A 20% capacity limit reviewed the top-ranked 20%  -  catching **100% of true SARs** on held-out data (simulated) |
 | No systematic evidence trail per alert | Append-only notes, decisions, and explainability signals per alert |
 
 ---
@@ -74,7 +74,7 @@ graph TB
 graph LR
     RAW[alerts.csv<br/>55,896 rows<br/>SHA: 3ae95fb5] --> SPLIT
 
-    subgraph SPLIT["Temporal Split — no leakage"]
+    subgraph SPLIT["Temporal Split  -  no leakage"]
         TRAIN[Train 60%<br/>Jan–Apr 2023<br/>33,732 alerts]
         VAL[Validation 20%<br/>Apr–May 2023<br/>11,344 alerts]
         HOLD[Holdout 20%<br/>May–Jul 2023<br/>11,119 alerts]
@@ -93,8 +93,8 @@ graph LR
 ```mermaid
 graph TB
     subgraph GCP["Google Cloud Platform"]
-        CR_S[Cloud Run — Staging<br/>1 vCPU · 512 MB<br/>min-instances: 0]
-        CR_P[Cloud Run — Production<br/>2 vCPU · 1 GB<br/>min-instances: 1]
+        CR_S[Cloud Run  -  Staging<br/>1 vCPU · 512 MB<br/>min-instances: 0]
+        CR_P[Cloud Run  -  Production<br/>2 vCPU · 1 GB<br/>min-instances: 1]
         AR[Artifact Registry<br/>Docker images]
     end
 
@@ -129,25 +129,25 @@ sequenceDiagram
     Queue->>API: GET /alerts?sort=risk_score
     API->>Model: score(features) for unscored alerts
     Model-->>API: risk_scores[]
-    API->>Store: list_alerts() — sorted by score
+    API->>Store: list_alerts()  -  sorted by score
     Store-->>Queue: ranked alert list
 
     Analyst->>Queue: Select high-risk alert
     Queue->>API: GET /alerts/{id}
-    API->>Store: get_alert() — features · history
+    API->>Store: get_alert()  -  features · history
     Store-->>Queue: alert detail + explainability signals
 
     Queue->>API: GET /alerts/{id}/transactions
-    Note over API,Store: WHERE txn_date <= alert_date<br/>(temporal integrity — no future data)
+    Note over API,Store: WHERE txn_date <= alert_date<br/>(temporal integrity  -  no future data)
     Store-->>Queue: pre-alert transactions only
 
     Analyst->>Queue: Add investigation note
     Queue->>API: POST /alerts/{id}/notes
-    API->>Store: append_note() — immutable audit log
+    API->>Store: append_note()  -  immutable audit log
 
     Analyst->>Queue: Record decision (escalate/close)
     Queue->>API: POST /alerts/{id}/decision {outcome: "escalate"}
-    API->>Store: append_decision() — immutable audit log
+    API->>Store: append_decision()  -  immutable audit log
     Note over Store: true_sar NEVER returned via API<br/>Analyst notes NEVER sent to external services
 ```
 
@@ -155,7 +155,7 @@ sequenceDiagram
 
 ## Performance Results
 
-> All figures are from held-out test data (11,119 alerts, never seen during training). Data is fully simulated — see [Data Disclosure](#data-disclosure) above.
+> All figures are from held-out test data (11,119 alerts, never seen during training). Data is fully simulated  -  see [Data Disclosure](#data-disclosure) above.
 
 ### Capacity-Ranking Mode (Primary Operating Policy)
 
@@ -202,16 +202,16 @@ The model is stable across the three training windows evaluated.
 ### Triage Engine (ML)
 - **24 behavioural features** engineered from transaction history: velocity ratios, jurisdiction entropy, structuring indicators, PEP flags, adverse media flags, cash intensity, round-number clustering, cross-border concentration
 - **Leakage-safe temporal splits**: training data is strictly ordered; holdout alerts are never seen during training or threshold calibration
-- **Capacity-based threshold**: threshold set at the 80th percentile of validation scores — keeps exactly 20% of the queue above the threshold regardless of score distribution
+- **Capacity-based threshold**: threshold set at the 80th percentile of validation scores  -  keeps exactly 20% of the queue above the threshold regardless of score distribution
 - **Walk-forward validation**: 3 expanding windows confirming stability across time periods
 - **Model registry**: versioned `model.joblib` with SHA-256 verification and `registry.json`
 - **PSI monitoring**: Population Stability Index computed per feature to detect score drift
 
 ### Investigation Workspace (API + UI)
-- **Temporal evidence integrity**: transaction history endpoint enforces `WHERE txn_date <= alert_date` — investigators see only pre-alert evidence, matching real AML compliance requirements
-- **Deterministic explainability**: 15 feature signals classified as FACTUAL_EVIDENCE / MODEL_SIGNAL / HUMAN_DECISION — no LLM, no black-box, fully reproducible
+- **Temporal evidence integrity**: transaction history endpoint enforces `WHERE txn_date <= alert_date`  -  investigators see only pre-alert evidence, matching real AML compliance requirements
+- **Deterministic explainability**: 15 feature signals classified as FACTUAL_EVIDENCE / MODEL_SIGNAL / HUMAN_DECISION  -  no LLM, no black-box, fully reproducible
 - **Immutable audit trail**: notes and decisions are append-only; prior history is never modified
-- **`true_sar` suppression**: ground truth label is never returned by any API endpoint — analysts work blind, as in real investigation
+- **`true_sar` suppression**: ground truth label is never returned by any API endpoint  -  analysts work blind, as in real investigation
 - **Alert lifecycle management**: open → in-review → escalated/closed with status transitions
 
 ### Engineering
@@ -243,7 +243,7 @@ source .venv/bin/activate       # Windows: .venv\Scripts\activate
 # Install dependencies
 pip install -e ".[dev]"
 
-# Train and register the model (required on first run — models/ is not committed)
+# Train and register the model (required on first run  -  models/ is not committed)
 python scripts/train_and_serialize.py --version 1.0.0 --promote
 
 # Seed the investigation database with demonstration alerts
@@ -377,7 +377,7 @@ AlertIQ uses a **purpose-built transaction simulator**, not real banking data:
 - **True SAR rate**: ~9.5% (5,209 of 55,896 alerts are labelled as true SARs)
 - Dataset fingerprint: SHA-256 `3ae95fb5` (see [DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md))
 
-Performance figures (AUC-ROC 0.979, Recall@20% 100%) reflect model performance on this synthetic dataset. Results on real AML alert data would differ — typical production AML ML systems achieve AUC-ROC 0.70–0.85 on real alerts with far noisier labels and more severe class imbalance.
+Performance figures (AUC-ROC 0.979, Recall@20% 100%) reflect model performance on this synthetic dataset. Results on real AML alert data would differ  -  typical production AML ML systems achieve AUC-ROC 0.70–0.85 on real alerts with far noisier labels and more severe class imbalance.
 
 ---
 
@@ -416,15 +416,15 @@ Performance figures (AUC-ROC 0.979, Recall@20% 100%) reflect model performance o
 
 | Milestone | Deliverable |
 |---|---|
-| M1 | Transaction simulator — 3,000 accounts, 8 ML typologies, realistic SAR labelling |
-| M2 | Triage engine — 24 features, LightGBM, leakage-safe temporal splits, baseline comparisons |
-| M2.1 | Evaluation framework — Recall@K, capacity-based threshold, AUC-ROC vs. AUC-PR distinction |
-| M3 | Robustness suite — walk-forward validation, PSI drift, calibration, stress testing |
-| M4 | Model registry + serialisation — versioned joblib, SHA-256 verification, champion/challenger |
-| M5 | Starlette serving layer — 9 REST endpoints, InferenceScorer, structured logging, health/metrics |
-| M5.1 | Next.js investigation workspace — alert queue, detail view, RiskBadge, QualityWarning |
-| M6 | SQLite investigation store — notes, decisions, explainability signals, audit trail |
-| M6.1 | Temporal evidence integrity — `WHERE txn_date <= alert_date`, `true_sar` suppression, 663/663 tests |
+| M1 | Transaction simulator  -  3,000 accounts, 8 ML typologies, realistic SAR labelling |
+| M2 | Triage engine  -  24 features, LightGBM, leakage-safe temporal splits, baseline comparisons |
+| M2.1 | Evaluation framework  -  Recall@K, capacity-based threshold, AUC-ROC vs. AUC-PR distinction |
+| M3 | Robustness suite  -  walk-forward validation, PSI drift, calibration, stress testing |
+| M4 | Model registry + serialisation  -  versioned joblib, SHA-256 verification, champion/challenger |
+| M5 | Starlette serving layer  -  9 REST endpoints, InferenceScorer, structured logging, health/metrics |
+| M5.1 | Next.js investigation workspace  -  alert queue, detail view, RiskBadge, QualityWarning |
+| M6 | SQLite investigation store  -  notes, decisions, explainability signals, audit trail |
+| M6.1 | Temporal evidence integrity  -  `WHERE txn_date <= alert_date`, `true_sar` suppression, 663/663 tests |
 
 ---
 
@@ -434,7 +434,7 @@ Performance figures (AUC-ROC 0.979, Recall@20% 100%) reflect model performance o
 
 **Why temporal splits and not random splits?** Random splits leak future transaction patterns into training data, making the model appear to perform better than it would in production. Temporal splits reflect the actual deployment scenario: the model is trained on historical data and scored on future alerts.
 
-**Why two training phases?** Phase 1 uses early stopping on a held-out validation set to find the optimal number of iterations. Phase 2 refits on train+val combined using that iteration count — this uses all available labelled data for the final model without leaking holdout data.
+**Why two training phases?** Phase 1 uses early stopping on a held-out validation set to find the optimal number of iterations. Phase 2 refits on train+val combined using that iteration count  -  this uses all available labelled data for the final model without leaking holdout data.
 
 **Why SQLite and not PostgreSQL?** This is a portfolio project with a Cloud Run deployment. SQLite with WAL mode handles concurrent reads adequately for a demo. The `InvestigationRepository` ABC interface means the persistence layer can be swapped without changing any route handlers.
 

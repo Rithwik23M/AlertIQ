@@ -1,9 +1,9 @@
-# Milestone 3 Completion Report — Model Robustness & Temporal Stability
+# Milestone 3 Completion Report  -  Model Robustness & Temporal Stability
 
-> **Milestone:** M3 — Model Robustness & Temporal Stability
+> **Milestone:** M3  -  Model Robustness & Temporal Stability
 > **Completion date:** 2026-09-12
 > **Evaluation mode:** fast (max_iter=100, HistGradientBoostingClassifier)
-> **Prior milestone:** M2 — Model Training & Walk-Forward Evaluation
+> **Prior milestone:** M2  -  Model Training & Walk-Forward Evaluation
 
 ---
 
@@ -104,13 +104,13 @@ Stress tests run on Window-3 (most recent test window, AUC-ROC = 0.978, Recall@2
 
 ### 4.1 Findings by Scenario
 
-**S01, S02, S06 — Robust.** Volume surges, new jurisdiction characteristics, and extreme SAR rate collapse do not degrade model performance. These represent the most common real-world perturbations.
+**S01, S02, S06  -  Robust.** Volume surges, new jurisdiction characteristics, and extreme SAR rate collapse do not degrade model performance. These represent the most common real-world perturbations.
 
-**S03 — Near-threshold.** Zeroing 30% of feature values produces Recall@20% = 0.907 (ΔRecall = −0.093). This is below the degradation threshold of −0.10 by a margin of 0.007. In production, systematic feature pipeline failures (nulls, zeroes, stale values) could push this below the threshold. **Data quality monitoring is required.**
+**S03  -  Near-threshold.** Zeroing 30% of feature values produces Recall@20% = 0.907 (ΔRecall = −0.093). This is below the degradation threshold of −0.10 by a margin of 0.007. In production, systematic feature pipeline failures (nulls, zeroes, stale values) could push this below the threshold. **Data quality monitoring is required.**
 
-**S04 — Structural failure expected.** Removing R08 alerts reduces the test population from 8,730 to 1,716. R08 comprises ~80% of alerts; the remaining population is much harder to rank because high-SAR-rate groups dominate. Recall drops to 0.468. This is not a model failure — it is a consequence of the portfolio composition assumption being violated. If R08 is removed from the alert mix in production, the model's training distribution is no longer representative and retraining is required.
+**S04  -  Structural failure expected.** Removing R08 alerts reduces the test population from 8,730 to 1,716. R08 comprises ~80% of alerts; the remaining population is much harder to rank because high-SAR-rate groups dominate. Recall drops to 0.468. This is not a model failure  -  it is a consequence of the portfolio composition assumption being violated. If R08 is removed from the alert mix in production, the model's training distribution is no longer representative and retraining is required.
 
-**S05 — Out-of-distribution as expected.** A novel typology (R08 alerts relabelled as SARs with extreme volume and jurisdiction features) degrades Recall@20% to 0.212 (ΔRecall = −0.788). This is the correct model behaviour: when presented with a pattern outside the training distribution, the model does not confidently rank novel SARs to the top of the queue. This serves as a safety property — silent high-confidence mislabelling is more dangerous than detectable OOD degradation. The appropriate response to novel typology introduction is retraining, not model modification.
+**S05  -  Out-of-distribution as expected.** A novel typology (R08 alerts relabelled as SARs with extreme volume and jurisdiction features) degrades Recall@20% to 0.212 (ΔRecall = −0.788). This is the correct model behaviour: when presented with a pattern outside the training distribution, the model does not confidently rank novel SARs to the top of the queue. This serves as a safety property  -  silent high-confidence mislabelling is more dangerous than detectable OOD degradation. The appropriate response to novel typology introduction is retraining, not model modification.
 
 ---
 
@@ -165,7 +165,7 @@ Combined with prior milestone test suites, the full test suite passes. The robus
 
 | Decision | Rationale |
 |---|---|
-| No calibration layer added | ECE 0.027–0.038 across all windows; well below 0.05 threshold. Platt and isotonic calibration evaluated — neither meaningfully reduced Brier score. Calibration adds complexity without benefit. |
+| No calibration layer added | ECE 0.027–0.038 across all windows; well below 0.05 threshold. Platt and isotonic calibration evaluated  -  neither meaningfully reduced Brier score. Calibration adds complexity without benefit. |
 | No model redesign | Recall@20% = 1.000 with zero variance. The primary objective is met. No evidence from M3 requires a design change. |
 | Threshold instability is a governance issue, not a model defect | The threshold reflects the score distribution relative to the SAR population. Variability is expected and correct. The response is process discipline (recalibrate per window), not architectural change. |
 | Typology failures (R09, R06, R12, R01) are not addressed by model modification | Root cause is structural: these groups have SAR rates > 40%. Capacity-ranking is the wrong tool for near-uniform-SAR populations. The response is typology-specific triage policy, not model tuning. |
@@ -210,7 +210,7 @@ Combined with prior milestone test suites, the full test suite passes. The robus
 
 ---
 
-## 12. Adversarial Review — Key Findings
+## 12. Adversarial Review  -  Key Findings
 
 The following weaknesses were identified through adversarial examination of M3 findings:
 
@@ -236,7 +236,7 @@ The following actions are recommended for Milestone 4. None are started here; M3
 
 4. **First challenger model.** Train a challenger using an alternative architecture or feature set and exercise the promotion decision framework on real walk-forward data.
 
-5. **Adversarial feature robustness investigation.** S03 (30% missing features) produced Recall@20% = 0.907 — 0.007 above the concern threshold. Investigate which specific features, when missing, cause the largest recall drop. Implement feature-specific alerting for high-impact features.
+5. **Adversarial feature robustness investigation.** S03 (30% missing features) produced Recall@20% = 0.907  -  0.007 above the concern threshold. Investigate which specific features, when missing, cause the largest recall drop. Implement feature-specific alerting for high-impact features.
 
 ---
 

@@ -1,4 +1,4 @@
-# AlertIQ — Milestone 5.1 Completion Report
+# AlertIQ  -  Milestone 5.1 Completion Report
 
 **Milestone:** Cloud Hardening (post-Milestone 5 adversarial review)
 **Status:** ✅ Complete
@@ -14,7 +14,7 @@ Milestone 5.1 addressed eight findings from the adversarial review of the Milest
 
 ## Findings and resolutions
 
-### Finding 1 — Incorrect billing model in production
+### Finding 1  -  Incorrect billing model in production
 
 **Problem:** `cloudrun-production.yaml` used `minScale: "1"` and `cpu-throttling: "false"` (instance-based billing, ~$5–10/month idle). The cost estimate claimed ~$3–5/month but the billing model was wrong for a portfolio project receiving occasional traffic.
 
@@ -24,7 +24,7 @@ Added a billing trade-off table in the production YAML header and in `OPERATIONS
 
 ---
 
-### Finding 2 — Wrong deployment region
+### Finding 2  -  Wrong deployment region
 
 **Problem:** `cloudrun-production.yaml` used `us-central1` while the Milestone 5 design specified `europe-west1` (sub-20 ms to Dublin, EU data location). `cd.yml` had a `GCP_REGION` secret that could be set to either region, creating a mismatch risk.
 
@@ -36,19 +36,19 @@ Added a billing trade-off table in the production YAML header and in `OPERATIONS
 
 ---
 
-### Finding 3 — Container registry: GHCR → Google Artifact Registry
+### Finding 3  -  Container registry: GHCR → Google Artifact Registry
 
 **Problem:** Images were pushed to `ghcr.io` (GitHub Container Registry), which is a separate authentication domain from GCP. This required a `packages: write` GitHub permission and created a two-registry trust chain.
 
 **Resolution:** Replaced GHCR with Google Artifact Registry at `europe-west1-docker.pkg.dev/<project>/alertiq/api`. Changes:
 - `cd.yml`: removed `packages: write` permission and GHCR login step. Docker now authenticates to Artifact Registry using the WIF access token (same credential as Cloud Run deployment).
 - Image URL format: `europe-west1-docker.pkg.dev/<project>/alertiq/api:<sha>` (SHA tag, immutable) and `:latest` (mutable, cache only).
-- SHA tags are immutable in Artifact Registry — a re-push to the same tag is rejected, making accidental overwrite of known-good images impossible.
+- SHA tags are immutable in Artifact Registry  -  a re-push to the same tag is rejected, making accidental overwrite of known-good images impossible.
 - Updated CI_CD.md and DEPLOYMENT.md.
 
 ---
 
-### Finding 4 — Terraform infrastructure
+### Finding 4  -  Terraform infrastructure
 
 **Problem:** No declarative infrastructure-as-code existed for the GCP resources. One-time setup required running manual `gcloud` commands from DEPLOYMENT.md, which is error-prone and not reproducible.
 
@@ -67,7 +67,7 @@ Added a billing trade-off table in the production YAML header and in `OPERATIONS
 
 ---
 
-### Finding 5 — Audit durability classification
+### Finding 5  -  Audit durability classification
 
 **Problem:** Audit durability was undocumented. The fail-open behaviour was implemented and tested, but an engineer deploying to a regulated environment would not know what durability guarantees existed or what upgrades were needed.
 
@@ -79,11 +79,11 @@ Added a billing trade-off table in the production YAML header and in `OPERATIONS
 - Fail-open vs. fail-closed trade-offs
 - The upgrade path (replacing `_emit()` in `AuditLogger`)
 
-No database was added — the portfolio deployment is correctly documented as best-effort, fail-open audit logging.
+No database was added  -  the portfolio deployment is correctly documented as best-effort, fail-open audit logging.
 
 ---
 
-### Finding 6 — Deployment traceability
+### Finding 6  -  Deployment traceability
 
 **Problem:** The staging YAML had `IMAGE_TAG_PLACEHOLDER` (one placeholder). The production YAML had no placeholders. Neither YAML exposed the deploying commit SHA or image content digest in the running service. The `/health` endpoint did not surface any traceability fields.
 
@@ -98,7 +98,7 @@ Every deployed Cloud Run revision can now answer: which Git commit, which contai
 
 ---
 
-### Finding 7 — Cost safeguards documentation
+### Finding 7  -  Cost safeguards documentation
 
 **Problem:** The documentation implied that `maxScale` was a hard billing cap and that ~$3–5/month was correct for production.
 
@@ -106,11 +106,11 @@ Every deployed Cloud Run revision can now answer: which Git commit, which contai
 - Corrected cost estimates in DEPLOYMENT.md and MILESTONE_5_COMPLETION.md.
 - Added explicit documentation that `maxScale` is a soft limit (caps autoscaling, not billing).
 - Documented the recommended Billing Alert procedure (Cloud Console → Billing → Budgets & alerts).
-- Explicitly stated that billing alerts notify but do NOT hard-stop spending — a Cloud Function would be required for a hard cap.
+- Explicitly stated that billing alerts notify but do NOT hard-stop spending  -  a Cloud Function would be required for a hard cap.
 
 ---
 
-### Finding 8 — Validate
+### Finding 8  -  Validate
 
 Full test suite run after all changes.
 
@@ -133,11 +133,11 @@ Total:                                   627 passed, 0 failed
 | `src/alertiq/serving/schema.py` | Added `git_sha`, `image_digest` to `HealthResponse` |
 | `src/alertiq/serving/app.py` | Health endpoint reads and exposes GIT_SHA/IMAGE_DIGEST env vars |
 | `tests/operational/test_failure_modes.py` | Added `TestDeploymentTraceability` (4 tests) |
-| `infra/terraform/versions.tf` | New — Terraform version constraints |
-| `infra/terraform/variables.tf` | New — input variables |
-| `infra/terraform/main.tf` | New — GCP resource definitions |
-| `infra/terraform/outputs.tf` | New — WIF provider name, SA email, registry URL |
-| `infra/terraform/.gitignore` | New — excludes state files and plan outputs |
+| `infra/terraform/versions.tf` | New  -  Terraform version constraints |
+| `infra/terraform/variables.tf` | New  -  input variables |
+| `infra/terraform/main.tf` | New  -  GCP resource definitions |
+| `infra/terraform/outputs.tf` | New  -  WIF provider name, SA email, registry URL |
+| `infra/terraform/.gitignore` | New  -  excludes state files and plan outputs |
 | `docs/DEPLOYMENT.md` | Major rewrite: Artifact Registry, europe-west1, Terraform, audit durability, cost safeguards |
 | `docs/CI_CD.md` | Updated: Artifact Registry, WIF auth chain, three-placeholder substitution |
 | `docs/OPERATIONS_RUNBOOK.md` | Added traceability runbook entry, audit durability classification, europe-west1 region |

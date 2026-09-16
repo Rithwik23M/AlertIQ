@@ -97,7 +97,7 @@ Tests live in `tests/` and are run with pytest.
 # Full test suite (excluding integration tests)
 pytest
 
-# With coverage — must stay above 70%
+# With coverage  -  must stay above 70%
 pytest --cov=alertiq --cov-report=term-missing
 
 # Integration tests (require data/simulation/alerts.csv)

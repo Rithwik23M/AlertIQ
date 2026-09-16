@@ -1,9 +1,9 @@
-# AlertIQ — Dataset Provenance Record
+# AlertIQ  -  Dataset Provenance Record
 
 **Document type:** Data provenance  
 **Covers:** `data/simulation/alerts.csv`, `data/simulation/transactions.csv`  
 **Created:** 2026-09-12  
-**Updated:** 2026-09-13 (M6.1 — full dual-dataset lineage added; transactions.csv replaced with canonical 2023 run; alerts.csv history reconciled)
+**Updated:** 2026-09-13 (M6.1  -  full dual-dataset lineage added; transactions.csv replaced with canonical 2023 run; alerts.csv history reconciled)
 
 ---
 
@@ -33,12 +33,12 @@ print(hashlib.sha256(data).hexdigest())
 | Version | SHA-256 (first 8 chars) | Row count | Milestone | Notes |
 |---------|------------------------|-----------|-----------|-------|
 | v1 (original) | `ab88cac9` | 56,195 | M2 | First generation; model 1.0.0 was trained on this version |
-| v2 | `15cea79b` | 56,195 | M6 | Regenerated — SHA changed, row count unchanged per M6 notes (SHA mismatch suggests minor platform/NumPy difference) |
+| v2 | `15cea79b` | 56,195 | M6 | Regenerated  -  SHA changed, row count unchanged per M6 notes (SHA mismatch suggests minor platform/NumPy difference) |
 | v3 (current) | `3ae95fb5` | 55,896 | M6.1 | Current on-disk version; row count differs from v1 by 299 rows |
 
 **Why the SHA changed across versions:** The simulator uses `numpy.random.Generator` seeded deterministically, but the Python/NumPy version used for generation changed between milestone sessions, causing different floating-point rounding in feature computation and a slightly different alert population. The simulation parameters are identical across all three runs: `seed=42, n_accounts=300, start_date=2023-01-01, end_date=2023-06-30`.
 
-**Impact on model:** Model 1.0.0 was trained on v1 (56,195 rows, training_rows=44,956 = train+val). The current scoring run uses v3 (55,896 rows). The population drift is 299 rows (0.53%) — both use the same accounts, simulation period, and parameters. This drift is documented in MODEL_LINEAGE.md and does not invalidate the model; it is a known limitation of environment-sensitive synthetic data generation.
+**Impact on model:** Model 1.0.0 was trained on v1 (56,195 rows, training_rows=44,956 = train+val). The current scoring run uses v3 (55,896 rows). The population drift is 299 rows (0.53%)  -  both use the same accounts, simulation period, and parameters. This drift is documented in MODEL_LINEAGE.md and does not invalidate the model; it is a known limitation of environment-sensitive synthetic data generation.
 
 ---
 
@@ -66,10 +66,10 @@ print(hashlib.sha256(data).hexdigest())
 
 | Version | SHA-256 (first 8 chars) | Row count | Date range | Milestone | Notes |
 |---------|------------------------|-----------|------------|-----------|-------|
-| v0 (DISCARDED) | unknown | 63,810 | 2024-01-01→2024-03-30 | M6 | Wrong simulation run — 2024 dates incompatible with 2023 alerts |
+| v0 (DISCARDED) | unknown | 63,810 | 2024-01-01→2024-03-30 | M6 | Wrong simulation run  -  2024 dates incompatible with 2023 alerts |
 | v1 (current) | `54094bd3` | 191,364 | 2023-01-01→2023-06-29 | M6.1 | Canonical generation; same seed/params as alerts.csv |
 
-**Why v0 was discarded:** The original `transactions.csv` came from a separate simulation run using 2024 dates. This made `txn_date <= alert_date` temporal filtering impossible — every transaction post-dated every alert. M6 worked around this by removing the temporal filter from `get_alert_transactions()`. M6.1 identified this as a critical temporal integrity violation, regenerated `transactions.csv` from the canonical 2023 simulation, and restored the temporal filter.
+**Why v0 was discarded:** The original `transactions.csv` came from a separate simulation run using 2024 dates. This made `txn_date <= alert_date` temporal filtering impossible  -  every transaction post-dated every alert. M6 worked around this by removing the temporal filter from `get_alert_transactions()`. M6.1 identified this as a critical temporal integrity violation, regenerated `transactions.csv` from the canonical 2023 simulation, and restored the temporal filter.
 
 **Generation command (M6.1):**
 ```python
@@ -102,19 +102,19 @@ result = run_simulation(SimulationConfig(
 
 ---
 
-## 4. Schema — Alerts
+## 4. Schema  -  Alerts
 
 | Column | Type | Description | Leakage? |
 |--------|------|-------------|----------|
-| `alert_id` | string | Unique alert identifier | ⚠️ ID — not a feature |
-| `account_id` | string | Account generating the alert | ⚠️ ID — not a feature |
+| `alert_id` | string | Unique alert identifier | ⚠️ ID  -  not a feature |
+| `account_id` | string | Account generating the alert | ⚠️ ID  -  not a feature |
 | `triggered_date` | string (YYYY-MM-DD) | Date alert was generated | Used for temporal splits |
 | `rule_id` | string (R01–R15) | TMS rule that fired the alert | Not a model feature |
 | `rule_name` | string | Human-readable rule name | Not a model feature |
 | `severity` | string | TMS alert severity (critical/high/medium) | Not a model feature |
-| `status` | string | Alert status (all "open" in simulator) | ⚠️ Post-alert outcome — leakage |
-| `true_sar` | int (0/1) | Ground truth SAR label | ⚠️ TARGET — not a feature |
-| `triggered_by_typology_txn` | int (0/1) | Label proxy | ⚠️ Leakage — not a feature |
+| `status` | string | Alert status (all "open" in simulator) | ⚠️ Post-alert outcome  -  leakage |
+| `true_sar` | int (0/1) | Ground truth SAR label | ⚠️ TARGET  -  not a feature |
+| `triggered_by_typology_txn` | int (0/1) | Label proxy | ⚠️ Leakage  -  not a feature |
 | `f01_vol_7d_log` | float64 | Log transaction volume, 7-day window | Model feature |
 | `f02_vol_30d_log` | float64 | Log transaction volume, 30-day window | Model feature |
 | `f03_vol_ratio_7_30` | float64 | Volume ratio 7d/30d | Model feature |
@@ -144,7 +144,7 @@ result = run_simulation(SimulationConfig(
 
 ---
 
-## 5. Schema — Transactions
+## 5. Schema  -  Transactions
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -164,15 +164,15 @@ result = run_simulation(SimulationConfig(
 
 ---
 
-## 6. Leakage Classification — Alerts
+## 6. Leakage Classification  -  Alerts
 
 | Column | Reason |
 |--------|--------|
-| `true_sar` | Target variable — direct label leakage |
-| `triggered_by_typology_txn` | Proxy for `true_sar` — indirect label leakage |
-| `account_id` | Identifier — would encode account-level memory, not behaviour |
-| `alert_id` | Identifier — no predictive content |
-| `status` | Post-alert outcome — unknown at alert generation time |
+| `true_sar` | Target variable  -  direct label leakage |
+| `triggered_by_typology_txn` | Proxy for `true_sar`  -  indirect label leakage |
+| `account_id` | Identifier  -  would encode account-level memory, not behaviour |
+| `alert_id` | Identifier  -  no predictive content |
+| `status` | Post-alert outcome  -  unknown at alert generation time |
 
 ---
 
@@ -194,12 +194,12 @@ This policy governs when SHA-256 checksums must be updated and how derived artef
 
 | Rule | Requirement |
 |------|-------------|
-| **P1 — SHA on mutation** | Whenever `alerts.csv` or `transactions.csv` is regenerated, this document must be updated with the new SHA-256 and row count before committing. |
-| **P2 — Training traceability** | `MODEL_LINEAGE.md` must record the SHA-256 of the alerts.csv used for each training run, so any model can be traced to its training data. |
-| **P3 — Seed reproducibility** | `seed_alert_store.py` must log the SHA-256 of alerts.csv and transactions.csv at seed time, stored in `data/seed_manifest.json`. |
-| **P4 — No silent regeneration** | If dataset regeneration changes row counts or SARs, this constitutes a data version bump and must be recorded in the version history table above. |
-| **P5 — Model/data compatibility gate** | If training_rows from `registry.json` does not equal `round(len(alerts_df) * 0.80)` ± 10, this indicates a data version mismatch that must be resolved before production deployment. |
-| **P6 — Temporal compatibility gate** | `transactions.csv` date range must overlap with `alerts.csv` date range. Any regeneration that breaks this overlap is a blocking defect. |
+| **P1  -  SHA on mutation** | Whenever `alerts.csv` or `transactions.csv` is regenerated, this document must be updated with the new SHA-256 and row count before committing. |
+| **P2  -  Training traceability** | `MODEL_LINEAGE.md` must record the SHA-256 of the alerts.csv used for each training run, so any model can be traced to its training data. |
+| **P3  -  Seed reproducibility** | `seed_alert_store.py` must log the SHA-256 of alerts.csv and transactions.csv at seed time, stored in `data/seed_manifest.json`. |
+| **P4  -  No silent regeneration** | If dataset regeneration changes row counts or SARs, this constitutes a data version bump and must be recorded in the version history table above. |
+| **P5  -  Model/data compatibility gate** | If training_rows from `registry.json` does not equal `round(len(alerts_df) * 0.80)` ± 10, this indicates a data version mismatch that must be resolved before production deployment. |
+| **P6  -  Temporal compatibility gate** | `transactions.csv` date range must overlap with `alerts.csv` date range. Any regeneration that breaks this overlap is a blocking defect. |
 
 ---
 

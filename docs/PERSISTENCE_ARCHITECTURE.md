@@ -1,4 +1,4 @@
-# AlertIQ — Persistence Architecture & InvestigationRepository Design
+# AlertIQ  -  Persistence Architecture & InvestigationRepository Design
 
 **Document type:** Architecture decision record + design specification  
 **Milestone:** M6.1 Investigation Integrity Hardening  
@@ -25,7 +25,7 @@ The investigation store is implemented as a module of procedural functions in `s
 
 | Function | Operation |
 |----------|-----------|
-| `init_db()` | DDL — create tables |
+| `init_db()` | DDL  -  create tables |
 | `upsert_alert(...)` | Write scored alert |
 | `upsert_transaction(...)` | Write transaction record |
 | `get_queue_stats()` | Aggregate capacity/status stats |
@@ -73,7 +73,7 @@ AlertIQ's CD pipeline deploys to Google Cloud Run. Cloud Run containers:
 
 ## 4. InvestigationRepository: Interface Design
 
-To make the persistence layer production-upgradeable, the store should be refactored behind a repository interface. The following design requires **no changes to any route handler** — only the interface implementation changes.
+To make the persistence layer production-upgradeable, the store should be refactored behind a repository interface. The following design requires **no changes to any route handler**  -  only the interface implementation changes.
 
 ```python
 # src/alertiq/serving/repository.py
@@ -86,7 +86,7 @@ class InvestigationRepository(ABC):
     Abstract persistence boundary for the AlertIQ investigation workspace.
 
     All methods that can fail due to a missing alert return None rather than
-    raising — route handlers treat None as HTTP 404.
+    raising  -  route handlers treat None as HTTP 404.
 
     Implementations must preserve these invariants:
     - Scored alert records are immutable after create (upsert is idempotent for
@@ -165,7 +165,7 @@ The current `alert_store.py` functions become the body of `SQLiteInvestigationRe
 
 ```python
 class SQLiteInvestigationRepository(InvestigationRepository):
-    """SQLite WAL implementation — suitable for single-server demo only."""
+    """SQLite WAL implementation  -  suitable for single-server demo only."""
 
     def __init__(self, db_path: str | None = None) -> None:
         self._db_path = db_path or os.environ.get("ALERTIQ_DB_PATH", "data/alert_store.db")
