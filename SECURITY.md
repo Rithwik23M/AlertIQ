@@ -27,13 +27,13 @@ The following security controls are intentionally enforced and must not be remov
 The `true_sar` column from the alerts dataset is never returned by any API endpoint. Analysts work without knowing the ground truth label, which mirrors real investigation practice and prevents feedback loops. This is enforced by explicit column exclusion in `alert_store.get_alert()` and verified by `tests/serving/test_temporal_integrity.py::TestAPITemporalIntegrity::test_get_alert_never_exposes_true_sar`.
 
 **2. Temporal evidence integrity**
-The transaction history endpoint (`GET /alerts/{id}/transactions`) enforces `WHERE txn_date <= alert_date`. Investigators can only see transactions that occurred before the alert was raised — matching real AML compliance requirements and preventing hindsight bias. Verified by `tests/serving/test_temporal_integrity.py`.
+The transaction history endpoint (`GET /alerts/{id}/transactions`) enforces `WHERE txn_date <= alert_date`. Investigators can only see transactions that occurred before the alert was raised  -  matching real AML compliance requirements and preventing hindsight bias. Verified by `tests/serving/test_temporal_integrity.py`.
 
 **3. Analyst notes not forwarded externally**
 Investigation notes entered by analysts are stored in the local SQLite database only. Notes are never forwarded to any external service, LLM API, or logging aggregator that could expose case content.
 
 **4. Deterministic explainability**
-Risk signal explanations are computed from stored feature values using deterministic thresholds — no external API calls, no LLM inference, no network requests during signal computation.
+Risk signal explanations are computed from stored feature values using deterministic thresholds  -  no external API calls, no LLM inference, no network requests during signal computation.
 
 ---
 

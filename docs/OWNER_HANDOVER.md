@@ -1,4 +1,4 @@
-# AlertIQ — Owner Handover Document
+# AlertIQ  -  Owner Handover Document
 
 **Purpose:** Personal reference for the next session, interview prep, or future development. Not intended for public readers.
 
@@ -10,8 +10,8 @@
 
 AlertIQ is a two-part system built on fully synthetic data:
 
-1. **ML triage engine** — ranks AML alerts by SAR probability; analysts work the sorted queue and stop at their capacity limit
-2. **Investigation workspace** — REST API + Next.js frontend where analysts open alerts, review evidence, add notes, and record decisions
+1. **ML triage engine**  -  ranks AML alerts by SAR probability; analysts work the sorted queue and stop at their capacity limit
+2. **Investigation workspace**  -  REST API + Next.js frontend where analysts open alerts, review evidence, add notes, and record decisions
 
 The data is entirely simulated. The 0.979 AUC-ROC is high because simulated typologies are cleaner than real money laundering. This is documented but is the biggest credibility risk in an interview.
 
@@ -21,11 +21,11 @@ The data is entirely simulated. The 0.979 AUC-ROC is high because simulated typo
 
 ### Why HistGradientBoostingClassifier (not LightGBM library)
 
-Used scikit-learn's HistGradientBoostingClassifier, which is a GBDT implementation equivalent to LightGBM. Rationale: no C extension dependency, works in all Python environments, same algorithm class. The README says "LightGBM" loosely — technically it's sklearn's HGBT. This is a minor inconsistency worth being aware of in interviews.
+Used scikit-learn's HistGradientBoostingClassifier, which is a GBDT implementation equivalent to LightGBM. Rationale: no C extension dependency, works in all Python environments, same algorithm class. The README says "LightGBM" loosely  -  technically it's sklearn's HGBT. This is a minor inconsistency worth being aware of in interviews.
 
 ### Why SQLite with WAL
 
-Demo-appropriate persistence. The `InvestigationRepository` ABC was designed from the start to allow a PostgreSQL swap. Every DB call goes through the ABC interface — no SQLite-specific API leaks into route handlers.
+Demo-appropriate persistence. The `InvestigationRepository` ABC was designed from the start to allow a PostgreSQL swap. Every DB call goes through the ABC interface  -  no SQLite-specific API leaks into route handlers.
 
 **Production upgrade path (7 steps):**
 1. Write `PostgresInvestigationRepository(InvestigationRepository)` implementing all abstract methods
@@ -47,7 +47,7 @@ This is standard practice. The key point is that holding out validation during p
 
 ### Why capacity-based threshold (80th percentile)
 
-F1-optimal threshold ≠ business-optimal threshold in AML. The "review top 20%" policy has a direct operational interpretation — how many investigators do we need? The 80th percentile threshold operationalises this directly. Threshold = 0.397 on current model.
+F1-optimal threshold ≠ business-optimal threshold in AML. The "review top 20%" policy has a direct operational interpretation  -  how many investigators do we need? The 80th percentile threshold operationalises this directly. Threshold = 0.397 on current model.
 
 **Caution:** threshold is stable within the validation distribution but can shift if the input feature distribution changes significantly. PSI monitoring is the detection mechanism.
 
@@ -57,23 +57,23 @@ Lower-level control. FastAPI's auto-schema is convenient but obscures what's hap
 
 ### Why `SELECT a.*` (known fragility)
 
-In `alert_store.get_alert()`, the SQL is `SELECT a.*` but the returned dict explicitly excludes `true_sar`. This is "defence by exclusion" — if a new column is added to the alerts table, it appears in the response unless someone remembers to exclude it. The right fix is explicit column enumeration in the SQL. This is a documented known issue. The test `test_get_alert_never_exposes_true_sar` is the guard.
+In `alert_store.get_alert()`, the SQL is `SELECT a.*` but the returned dict explicitly excludes `true_sar`. This is "defence by exclusion"  -  if a new column is added to the alerts table, it appears in the response unless someone remembers to exclude it. The right fix is explicit column enumeration in the SQL. This is a documented known issue. The test `test_get_alert_never_exposes_true_sar` is the guard.
 
 ---
 
-## Critical Security Controls — Never Remove
+## Critical Security Controls  -  Never Remove
 
 | Control | Location | Test |
 |---|---|---|
-| `true_sar` suppression | `alert_store.get_alert()` — explicit dict build excluding `true_sar` | `test_temporal_integrity.py::TestAPITemporalIntegrity::test_get_alert_never_exposes_true_sar` |
-| Temporal filter | `alert_store.get_alert_transactions()` — `WHERE t.txn_date <= ?` | `test_temporal_integrity.py` (12 tests) |
-| No external LLM calls | `alert_store._compute_explainability_signals()` — pure Python, no network | `test_investigation_journey.py` |
-| Analyst notes not forwarded | `alert_routes.py` POST `/alerts/{id}/notes` — writes to SQLite only | No direct test; verify on any route refactor |
-| Model cannot select HUMAN_DECISION | `alert_store._compute_explainability_signals()` — HUMAN_DECISION signals never generated by this function | `test_temporal_integrity.py::TestExplainabilitySignalClassification` |
+| `true_sar` suppression | `alert_store.get_alert()`  -  explicit dict build excluding `true_sar` | `test_temporal_integrity.py::TestAPITemporalIntegrity::test_get_alert_never_exposes_true_sar` |
+| Temporal filter | `alert_store.get_alert_transactions()`  -  `WHERE t.txn_date <= ?` | `test_temporal_integrity.py` (12 tests) |
+| No external LLM calls | `alert_store._compute_explainability_signals()`  -  pure Python, no network | `test_investigation_journey.py` |
+| Analyst notes not forwarded | `alert_routes.py` POST `/alerts/{id}/notes`  -  writes to SQLite only | No direct test; verify on any route refactor |
+| Model cannot select HUMAN_DECISION | `alert_store._compute_explainability_signals()`  -  HUMAN_DECISION signals never generated by this function | `test_temporal_integrity.py::TestExplainabilitySignalClassification` |
 
 ---
 
-## Test Suite — What's Where
+## Test Suite  -  What's Where
 
 ```
 tests/
@@ -101,7 +101,7 @@ Total: 663 passing tests
 
 ---
 
-## Performance Numbers — Source of Truth
+## Performance Numbers  -  Source of Truth
 
 All numbers are from `data/experiment/results.json` (generated by `scripts/run_triage_experiment.py`).
 
@@ -128,43 +128,43 @@ All numbers are from `data/experiment/results.json` (generated by `scripts/run_t
 
 ### Known Issues
 
-1. **`SELECT a.*` fragility** — `get_alert()` uses `SELECT a.*` then explicitly excludes `true_sar`. Any new column added to the alerts table would be returned unless exclusion is updated. Fix: explicit column list in SQL.
+1. **`SELECT a.*` fragility**  -  `get_alert()` uses `SELECT a.*` then explicitly excludes `true_sar`. Any new column added to the alerts table would be returned unless exclusion is updated. Fix: explicit column list in SQL.
 
-2. **No authentication** — Every endpoint is publicly accessible. This is a demo limitation. Adding JWT middleware is a well-understood Starlette pattern.
+2. **No authentication**  -  Every endpoint is publicly accessible. This is a demo limitation. Adding JWT middleware is a well-understood Starlette pattern.
 
-3. **SQLite ephemeral on Cloud Run** — The investigation database resets on container restart. Production requires Cloud SQL or similar.
+3. **SQLite ephemeral on Cloud Run**  -  The investigation database resets on container restart. Production requires Cloud SQL or similar.
 
-4. **Jest tests blocked in cloud CI** — `@testing-library/jest-dom` cannot install in the cloud environment due to egress restrictions. Tests must run locally. CI doesn't gate on UI tests.
+4. **Jest tests blocked in cloud CI**  -  `@testing-library/jest-dom` cannot install in the cloud environment due to egress restrictions. Tests must run locally. CI doesn't gate on UI tests.
 
-5. **Model drift handling is passive** — PSI monitoring detects drift but there's no automated alert or retraining trigger. The governance framework is documented but not wired.
+5. **Model drift handling is passive**  -  PSI monitoring detects drift but there's no automated alert or retraining trigger. The governance framework is documented but not wired.
 
-6. **Threshold instability across distributions** — The 0.397 threshold is calibrated on validation data. If alert score distributions shift significantly in production, the threshold becomes miscalibrated. PSI monitoring is the early warning.
+6. **Threshold instability across distributions**  -  The 0.397 threshold is calibrated on validation data. If alert score distributions shift significantly in production, the threshold becomes miscalibrated. PSI monitoring is the early warning.
 
-7. **No rate limiting** — The API can be flooded. Standard fix: Starlette middleware + API gateway.
+7. **No rate limiting**  -  The API can be flooded. Standard fix: Starlette middleware + API gateway.
 
 ---
 
 ## What to Build Next (Priority Order)
 
-**Priority 1 — Make it production-credible**
+**Priority 1  -  Make it production-credible**
 - Add JWT authentication middleware
 - Swap SQLite for PostgreSQL behind the existing ABC
 - Add rate limiting middleware
 - Wire PSI alerts to a notification channel (email, Slack webhook)
 - Add explicit column selection to `get_alert()` SQL
 
-**Priority 2 — Make the demo more impressive**
+**Priority 2  -  Make the demo more impressive**
 - Screenshots in README (alert queue, investigation workspace, explainability panel)
-- A deployed demo URL (Cloud Run) — currently documented but not confirmed live
+- A deployed demo URL (Cloud Run)  -  currently documented but not confirmed live
 - A GIF showing the investigation workflow
 
-**Priority 3 — ML improvements**
-- Calibrated probabilities (Platt scaling or isotonic regression) — current scores are not well-calibrated probabilities despite the name "SAR probability"
+**Priority 3  -  ML improvements**
+- Calibrated probabilities (Platt scaling or isotonic regression)  -  current scores are not well-calibrated probabilities despite the name "SAR probability"
 - SHAP values for model explainability (in addition to threshold-based signals)
-- Second typology class — currently binary (SAR / not SAR); extend to typology classification
+- Second typology class  -  currently binary (SAR / not SAR); extend to typology classification
 - Adversarial scenario: test if a money launderer who knows the features can evade detection
 
-**Priority 4 — Portfolio polish**
+**Priority 4  -  Portfolio polish**
 - Add a "what I learned" section to the README
 - Interview video walkthrough (Loom)
 - Quantify investigation cost savings (analyst hours × false positive rate improvement)
@@ -173,7 +173,7 @@ All numbers are from `data/experiment/results.json` (generated by `scripts/run_t
 
 ## Things to Know For Interviews
 
-**The one business sentence:** "Banks can only review 15-20% of AML alerts. AlertIQ ranks them so that 20% covers 100% of real SARs — on simulated data."
+**The one business sentence:** "Banks can only review 15-20% of AML alerts. AlertIQ ranks them so that 20% covers 100% of real SARs  -  on simulated data."
 
 **The one technical sentence:** "LightGBM trained with leakage-safe temporal splits and a capacity-based threshold; investigation workspace with temporal evidence integrity and append-only audit trail."
 

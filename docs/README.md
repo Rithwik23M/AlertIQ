@@ -1,4 +1,4 @@
-# AlertIQ — Documentation Index
+# AlertIQ  -  Documentation Index
 
 This directory contains all project documentation. Start with the [root README](../README.md) for a project overview, architecture diagrams, and performance results.
 
@@ -66,7 +66,7 @@ Current milestone:
 
 | Document | Description |
 |---|---|
-| [MILESTONE_6_1_COMPLETION.md](MILESTONE_6_1_COMPLETION.md) | Temporal evidence integrity hardening — 663/663 tests, E2E journey validation |
+| [MILESTONE_6_1_COMPLETION.md](MILESTONE_6_1_COMPLETION.md) | Temporal evidence integrity hardening  -  663/663 tests, E2E journey validation |
 | [MILESTONE_7_COMPLETION.md](MILESTONE_7_COMPLETION.md) | Portfolio launch, demo readiness, recruiter review, final scorecard |
 
 Historical milestone records (build evidence, do not delete):

@@ -1,6 +1,6 @@
-# AlertIQ — Serving Architecture (Milestone 4)
+# AlertIQ  -  Serving Architecture (Milestone 4)
 
-> **Operating policy** — AlertIQ scores are a *relative alert prioritisation
+> **Operating policy**  -  AlertIQ scores are a *relative alert prioritisation
 > indicator* for analyst review only. They are not a compliance determination
 > and do not constitute a SAR filing decision. Human analysts review all flagged
 > alerts and make all SAR filing decisions.
@@ -30,8 +30,8 @@
 
 The AlertIQ serving layer exposes a JSON REST API that accepts 24-feature
 financial-alert vectors and returns a **risk score** in \[0, 1\].  The score
-represents relative investigative priority — higher scores should be reviewed
-first — but it is never interpreted as a binary classification or a compliance
+represents relative investigative priority  -  higher scores should be reviewed
+first  -  but it is never interpreted as a binary classification or a compliance
 finding.
 
 The stack is intentionally thin:
@@ -83,7 +83,7 @@ Route handler  (/score or /score/batch)
   │     ├─ AlertFeatures.to_array() → (1, 24) float64 numpy array
   │     │
   │     └─ TriageScorer.score(X) → probability ∈ [0, 1]
-  │           (TriageScorer.predict() is NEVER called — see §5)
+  │           (TriageScorer.predict() is NEVER called  -  see §5)
   │
   ├─ Build ScoreResponse / BatchScoreResponse
   │     • risk_score (float ∈ [0,1])
@@ -118,7 +118,7 @@ alertiq/serving/
 
 ## 4. Module reference
 
-### `app.py` — API application
+### `app.py`  -  API application
 
 **Endpoints**
 
@@ -138,12 +138,12 @@ _audit:  AuditLogger | None       # opened at startup, closed at shutdown
 
 **Middleware (in order)**
 
-1. `PayloadSizeLimitMiddleware` — rejects oversized bodies (HTTP 413)
-2. `RequestIDMiddleware` — attaches `X-AlertIQ-Request-ID` UUID header
+1. `PayloadSizeLimitMiddleware`  -  rejects oversized bodies (HTTP 413)
+2. `RequestIDMiddleware`  -  attaches `X-AlertIQ-Request-ID` UUID header
 
 **Startup / shutdown**
 
-Starlette 1.0 lifecycle is managed by `_lifespan(app)` — an
+Starlette 1.0 lifecycle is managed by `_lifespan(app)`  -  an
 `asynccontextmanager`.  On startup it:
 
 1. Opens `AuditLogger`
@@ -157,7 +157,7 @@ all scoring endpoints return HTTP 503.
 
 ---
 
-### `schema.py` — Request / response schemas
+### `schema.py`  -  Request / response schemas
 
 **Feature contract**
 
@@ -187,15 +187,15 @@ This string is embedded in every `ScoreResponse` and `BatchScoreResponse`.
 
 ---
 
-### `quality.py` — Data quality checks
+### `quality.py`  -  Data quality checks
 
 Two sets of thresholds are applied per request.  Flags are **informational
-only** — they annotate the response and appear in the audit log but do not
+only**  -  they annotate the response and appear in the audit log but do not
 block inference.  A score returned alongside a `quality_warning=True` flag
 should be interpreted with additional caution by the downstream analyst
 workflow.
 
-**`SHOULD_BE_POSITIVE`** — features that should never be exactly zero in a
+**`SHOULD_BE_POSITIVE`**  -  features that should never be exactly zero in a
 valid production alert.  Zero values suggest upstream feature engineering
 failures (no activity recorded when there should be):
 
@@ -204,7 +204,7 @@ failures (no activity recorded when there should be):
  "f06_txn_count_7d", "f07_txn_count_30d", "f10_account_age_days"}
 ```
 
-**`EXTREME_VALUE_THRESHOLDS`** — upper bounds based on plausible domain
+**`EXTREME_VALUE_THRESHOLDS`**  -  upper bounds based on plausible domain
 ranges.  Values exceeding the threshold are flagged as extreme:
 
 | Feature | Threshold |
@@ -223,7 +223,7 @@ degrading inference.
 
 ---
 
-### `scorer.py` — Inference wrapper
+### `scorer.py`  -  Inference wrapper
 
 `InferenceScorer` wraps a loaded `ModelArtifact`.
 
@@ -238,7 +238,7 @@ does not match the loaded artifact's version.
 
 ---
 
-### `artifact.py` — Model serialisation
+### `artifact.py`  -  Model serialisation
 
 ```python
 save_artifact(scorer, config, *, model_version, path, training_rows, notes="") -> Path
@@ -247,25 +247,25 @@ load_artifact(path) -> ModelArtifact
 
 The `.joblib` file is accompanied by a `.joblib.sha256` sidecar containing
 the hex SHA-256 digest.  `load_artifact` verifies the digest before
-deserialising — any byte-level corruption or tampering raises `ValueError`.
+deserialising  -  any byte-level corruption or tampering raises `ValueError`.
 
 `ModelArtifact` is a frozen dataclass holding:
 
-- `scorer` — fitted `TriageScorer`
-- `feature_columns` — canonical feature name tuple
-- `schema_version` — int (currently 1)
-- `model_version` — semver string
-- `trained_at` — ISO-8601 UTC timestamp
-- `training_rows` — int
-- `best_iter` — early-stopping iteration from phase 1
-- `threshold` — F1-optimal classification threshold (supplementary; not used in
+- `scorer`  -  fitted `TriageScorer`
+- `feature_columns`  -  canonical feature name tuple
+- `schema_version`  -  int (currently 1)
+- `model_version`  -  semver string
+- `trained_at`  -  ISO-8601 UTC timestamp
+- `training_rows`  -  int
+- `best_iter`  -  early-stopping iteration from phase 1
+- `threshold`  -  F1-optimal classification threshold (supplementary; not used in
   capacity-ranking mode)
-- `operating_mode` — always `"capacity_ranking"`
-- `notes` — free-text provenance string
+- `operating_mode`  -  always `"capacity_ranking"`
+- `notes`  -  free-text provenance string
 
 ---
 
-### `registry.py` — Model version registry
+### `registry.py`  -  Model version registry
 
 `ModelRegistry(root)` manages a JSON manifest (`registry.json`) in `root/`.
 
@@ -286,7 +286,7 @@ intact.
 
 ---
 
-### `audit.py` — Audit logger
+### `audit.py`  -  Audit logger
 
 Controlled by `ALERTIQ_AUDIT_LOG_PATH`:
 
@@ -318,7 +318,7 @@ Controlled by `ALERTIQ_AUDIT_LOG_PATH`:
 }
 ```
 
-**Raw feature values are never logged** — they may contain sensitive
+**Raw feature values are never logged**  -  they may contain sensitive
 financial transaction data.
 
 ---
@@ -351,7 +351,7 @@ TestScoreSingle::test_score_method_called_not_predict`.
 
 Every `ScoreRequest` and `BatchScoreRequest` carries an integer
 `schema_version`.  If the version is not in `SUPPORTED_SCHEMA_VERSIONS`,
-the API returns HTTP 422 immediately — no silent downgrade.
+the API returns HTTP 422 immediately  -  no silent downgrade.
 
 When the feature contract changes (e.g. a new feature is added), the schema
 version is incremented and the artifact stores its version.  Old clients
@@ -409,15 +409,15 @@ new champion.  The API does not hot-reload models.
 
 ## 9. Audit logging
 
-**Container deployments** — set `ALERTIQ_AUDIT_LOG_PATH=-` to emit records
+**Container deployments**  -  set `ALERTIQ_AUDIT_LOG_PATH=-` to emit records
 to stdout, then collect with your container logging driver (CloudWatch Logs,
 Datadog Agent, Fluentd, etc.).
 
-**File deployments** — set `ALERTIQ_AUDIT_LOG_PATH=/var/log/alertiq/audit.jsonl`
+**File deployments**  -  set `ALERTIQ_AUDIT_LOG_PATH=/var/log/alertiq/audit.jsonl`
 and configure logrotate.  The AuditLogger opens the file in append mode with
 `buffering=1` (line-buffered).
 
-**SIEM integration** — the newline-delimited JSON format is directly
+**SIEM integration**  -  the newline-delimited JSON format is directly
 consumable by Splunk, Elastic, and most SIEMs.  Key fields for alert
 correlation: `request_id`, `alert_id`, `model_version`, `scored_at`.
 
@@ -488,7 +488,7 @@ process memory once, then all requests are read-only).  Scale horizontally
 by running multiple container replicas behind a load balancer.  Each replica
 loads its own copy of the model from the shared (read-only) registry mount.
 
-Avoid multiple uvicorn workers within a single container — each worker would
+Avoid multiple uvicorn workers within a single container  -  each worker would
 load a separate model copy, wasting memory.  Use replicas instead.
 
 ### Health check
@@ -544,7 +544,7 @@ Starlette; the API contract is identical.  JSON serialisation, routing,
 middleware, and error handling are all available in Starlette itself.
 
 **Trade-off**: No automatic OpenAPI / Swagger UI generation.  Acceptable at
-this milestone — the schema is documented here and in `schema.py` docstrings.
+this milestone  -  the schema is documented here and in `schema.py` docstrings.
 
 ---
 
@@ -554,7 +554,7 @@ this milestone — the schema is documented here and in `schema.py` docstrings.
 
 **Decision**: Implement a lightweight JSON-manifest registry (`registry.py`).
 MLflow introduces a PostgreSQL or SQLite backend, a tracking server process,
-and additional Python dependencies — none of which are justified for a single
+and additional Python dependencies  -  none of which are justified for a single
 model serving a single schema version.
 
 **Trade-off**: No experiment tracking or metrics history in the registry.
@@ -574,7 +574,7 @@ copy, multiplying memory use for no throughput benefit (the model inference
 itself is CPU-bound, not I/O-bound, so async workers don't help).
 
 **Trade-off**: A container restart is required to roll out a new model
-version.  This is acceptable — champion promotion is a deliberate, supervised
+version.  This is acceptable  -  champion promotion is a deliberate, supervised
 action, not a hot-path operation.
 
 ---
@@ -588,7 +588,7 @@ action, not a hot-path operation.
 label is derived.  `TriageScorer.predict()` is never called.
 
 **Trade-off**: Downstream analyst systems must implement their own ranking /
-review-queue logic.  This is correct — the appropriate threshold depends on
+review-queue logic.  This is correct  -  the appropriate threshold depends on
 analyst headcount and regulatory review-rate targets, which the model cannot
 know.
 

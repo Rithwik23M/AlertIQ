@@ -1,7 +1,7 @@
-# AlertIQ — Deployment Guide
+# AlertIQ  -  Deployment Guide
 
 AlertIQ deploys to Google Cloud Run as a containerised scoring API.
-Cloud Run provides scale-to-zero, automatic HTTPS, and pay-per-request billing — appropriate for a project with variable scoring demand and no requirement for persistent connections.
+Cloud Run provides scale-to-zero, automatic HTTPS, and pay-per-request billing  -  appropriate for a project with variable scoring demand and no requirement for persistent connections.
 
 ---
 
@@ -49,7 +49,7 @@ This means any revision can be fully audited: which commit built it, which bytes
 
 - Google Cloud project with billing enabled
 - `gcloud` CLI installed and authenticated (`gcloud auth login`)
-- Terraform ≥ 1.6 installed (for one-time infra setup — see `infra/terraform/`)
+- Terraform ≥ 1.6 installed (for one-time infra setup  -  see `infra/terraform/`)
 - Docker installed (for local testing)
 - Python 3.11+ (for scripts)
 
@@ -59,7 +59,7 @@ This means any revision can be fully audited: which commit built it, which bytes
 
 The GCP infrastructure is provisioned with Terraform. Run once per project.
 
-### Option A — Terraform (recommended)
+### Option A  -  Terraform (recommended)
 
 ```bash
 cd infra/terraform
@@ -78,7 +78,7 @@ terraform apply \
 
 The `terraform apply` output prints the exact values to copy into GitHub secrets.
 
-### Option B — gcloud CLI (manual equivalent)
+### Option B  -  gcloud CLI (manual equivalent)
 
 If you prefer not to use Terraform, the equivalent commands are:
 
@@ -165,7 +165,7 @@ In **Settings → Secrets and variables → Actions**, add:
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Output of the provider describe command above |
 | `GCP_SERVICE_ACCOUNT` | `alertiq-cd@<PROJECT_ID>.iam.gserviceaccount.com` |
 
-> **Note:** `GCP_REGION` is no longer a secret — the region is hardcoded as `europe-west1` in the CD workflow to match the Artifact Registry location and the service YAMLs.
+> **Note:** `GCP_REGION` is no longer a secret  -  the region is hardcoded as `europe-west1` in the CD workflow to match the Artifact Registry location and the service YAMLs.
 
 ---
 
@@ -177,7 +177,7 @@ In **Settings → Secrets and variables → Actions**, add:
 # Build
 docker build -t alertiq-api:local .
 
-# Run (without a model — degraded mode)
+# Run (without a model  -  degraded mode)
 docker run -p 8080:8080 alertiq-api:local
 
 # Run with a model (mount model_registry from host)
@@ -345,7 +345,7 @@ gcloud run services replace /tmp/rollback-deploy.yaml \
     --region "${REGION}" --project "${PROJECT_ID}"
 ```
 
-> **Immutable tags:** SHA tags (e.g. `api:a1b2c3...`) are immutable — a re-push to the same tag is rejected by Artifact Registry. The `latest` tag is mutable and is only used for cache warming, never for rollback. Always use SHA tags in rollback and production promotion commands.
+> **Immutable tags:** SHA tags (e.g. `api:a1b2c3...`) are immutable  -  a re-push to the same tag is rejected by Artifact Registry. The `latest` tag is mutable and is only used for cache warming, never for rollback. Always use SHA tags in rollback and production promotion commands.
 
 ## Model rollback (independent of app rollback)
 
@@ -391,11 +391,11 @@ Audit records are written to **stdout → Cloud Logging** via structured Python 
 
 For a system processing real AML decisions in a regulated environment, the following upgrades would typically be required before go-live:
 
-1. **Durable write-ahead log** — Write audit records to Cloud Spanner, BigQuery, or a WORM-protected Cloud Storage bucket before returning the scoring response (fail-closed), or to an append-only Pub/Sub topic with guaranteed delivery.
-2. **Fail-closed option** — For high-stakes decisions, the system should return an error rather than a score if the audit record cannot be written, to prevent untracked scoring.
-3. **Tamper-evident storage** — Write records to an immutable or auditor-accessible store (Cloud Spanner with version history, BigQuery with `require_partition_filter`, or GCS with object hold policies).
-4. **Retention policy** — Audit records should be retained for the period required by local regulation (5–7 years is common for AML records in EU/UK jurisdictions).
-5. **Data Processing Agreement** — Cloud Logging and any audit store must be covered by a signed DPA with Google Cloud.
+1. **Durable write-ahead log**  -  Write audit records to Cloud Spanner, BigQuery, or a WORM-protected Cloud Storage bucket before returning the scoring response (fail-closed), or to an append-only Pub/Sub topic with guaranteed delivery.
+2. **Fail-closed option**  -  For high-stakes decisions, the system should return an error rather than a score if the audit record cannot be written, to prevent untracked scoring.
+3. **Tamper-evident storage**  -  Write records to an immutable or auditor-accessible store (Cloud Spanner with version history, BigQuery with `require_partition_filter`, or GCS with object hold policies).
+4. **Retention policy**  -  Audit records should be retained for the period required by local regulation (5–7 years is common for AML records in EU/UK jurisdictions).
+5. **Data Processing Agreement**  -  Cloud Logging and any audit store must be covered by a signed DPA with Google Cloud.
 
 The current audit module's `AuditLogger` interface is designed to accept alternative `_emit()` implementations. The upgrade path is to replace the file/logging emit with a Spanner or BigQuery write, behind the same fail-open wrapper.
 
@@ -407,12 +407,12 @@ The current audit module's `AuditLogger` interface is designed to accept alterna
 
 AlertIQ uses **request-based billing** in both staging and production:
 
-- `minScale: "0"` — scale to zero when idle (no idle cost)
-- `cpu-throttling: "true"` — CPU allocated only during request processing
+- `minScale: "0"`  -  scale to zero when idle (no idle cost)
+- `cpu-throttling: "true"`  -  CPU allocated only during request processing
 
 **Cold-start trade-off:** The first request after the service goes idle incurs a cold start of approximately 3–10 seconds (container launch + ~1–3 s LightGBM artifact load). Subsequent requests within the same instance are warm. For a portfolio deployment with occasional traffic, this trade-off eliminates idle spend.
 
-**Instance cap:** `maxScale: "10"` limits parallel container instances. This is a soft limit — it caps autoscaling but is not a hard billing stop.
+**Instance cap:** `maxScale: "10"` limits parallel container instances. This is a soft limit  -  it caps autoscaling but is not a hard billing stop.
 
 **Billing alert (recommended):** Cloud Run billing alerts send notifications when projected spend crosses a threshold. They do **not** automatically stop the service.
 

@@ -1,4 +1,4 @@
-# Milestone 4 Completion Report — Production Model Serving & API
+# Milestone 4 Completion Report  -  Production Model Serving & API
 
 **AlertIQ AML Alert Triage Engine**
 Date: 2026-09-12
@@ -10,7 +10,7 @@ Serving tests: 158 passed across 6 test files
 ## Objective
 
 Milestone 4 wraps the Milestone 3 `TriageScorer` in a production-quality HTTP
-scoring API — a Starlette 1.0 ASGI application served by uvicorn — that exposes
+scoring API  -  a Starlette 1.0 ASGI application served by uvicorn  -  that exposes
 the capacity-ranking model to external callers while enforcing the human-in-the-loop
 compliance requirements established throughout the project.
 
@@ -33,19 +33,19 @@ compliance requirements established throughout the project.
 ### 4 API Endpoints
 
 ```
-GET  /health          — liveness / readiness probe (returns "ok" or "degraded")
-GET  /model/info      — model metadata, feature schema, operating policy
-POST /score           — score a single alert
-POST /score/batch     — score up to 500 alerts per request
+GET  /health           -  liveness / readiness probe (returns "ok" or "degraded")
+GET  /model/info       -  model metadata, feature schema, operating policy
+POST /score            -  score a single alert
+POST /score/batch      -  score up to 500 alerts per request
 ```
 
 ### Supporting Deliverables
 
-- `scripts/train_and_serialize.py` — end-to-end training script that registers a champion model into the local registry
-- `Dockerfile` — multi-stage build; non-root `alertiq` user (UID 1001); HEALTHCHECK; single-worker uvicorn
-- `.dockerignore` — excludes models, simulation data, caches, and secrets from the image
-- `docs/SERVING_ARCHITECTURE.md` — 14-section architecture document with request lifecycle diagram, component map, security controls table, configuration reference, and 5 ADRs
-- `tests/serving/` — 158 tests across 6 test files
+- `scripts/train_and_serialize.py`  -  end-to-end training script that registers a champion model into the local registry
+- `Dockerfile`  -  multi-stage build; non-root `alertiq` user (UID 1001); HEALTHCHECK; single-worker uvicorn
+- `.dockerignore`  -  excludes models, simulation data, caches, and secrets from the image
+- `docs/SERVING_ARCHITECTURE.md`  -  14-section architecture document with request lifecycle diagram, component map, security controls table, configuration reference, and 5 ADRs
+- `tests/serving/`  -  158 tests across 6 test files
 
 ---
 
@@ -55,7 +55,7 @@ POST /score/batch     — score up to 500 alerts per request
 
 The deployment environment does not have PyPI egress for FastAPI. Starlette
 is the dependency FastAPI wraps; the API contract is identical. No functionality
-was lost — Pydantic v2 handles validation; Starlette handles routing, middleware,
+was lost  -  Pydantic v2 handles validation; Starlette handles routing, middleware,
 and the lifespan context manager.
 
 ### ADR-M4-02: JSON manifest registry instead of MLflow
@@ -66,7 +66,7 @@ require a database server, a tracking server process, and a Python dependency
 not available in the environment. The JSON registry is human-readable, auditable
 with `git diff`, trivially backed up, and carries zero operational overhead.
 
-### ADR-M4-03: Single uvicorn worker — scale via container replicas
+### ADR-M4-03: Single uvicorn worker  -  scale via container replicas
 
 The model artifact is loaded into process memory at startup. Multiple uvicorn
 workers would each load a separate copy, multiplying RAM usage with no latency
@@ -74,7 +74,7 @@ benefit (no GIL contention on the inference path; scikit-learn HistGBM releases
 the GIL). Horizontal scaling is achieved by running additional container replicas
 behind a load balancer.
 
-### ADR-M4-04: Capacity ranking — raw probability, no fixed threshold
+### ADR-M4-04: Capacity ranking  -  raw probability, no fixed threshold
 
 Milestone 3 showed the F1-optimal classification threshold varied from 0.056 to
 0.253 across walk-forward windows (range = 0.198). A hard-coded threshold would
@@ -153,7 +153,7 @@ Every scoring event generates a structured JSON record in the audit log:
 **Batch events**: every alert within a batch receives an individual audit
 record (identical structure to the single-score event), PLUS a batch-level
 summary record with aggregate counts. This ensures every alert score is
-individually traceable — a requirement for AML regulatory review.
+individually traceable  -  a requirement for AML regulatory review.
 
 ---
 
@@ -161,7 +161,7 @@ individually traceable — a requirement for AML regulatory review.
 
 Three issues were identified and fixed before milestone close.
 
-### Finding 1 — HIGH: Batch endpoint did not emit per-alert audit records
+### Finding 1  -  HIGH: Batch endpoint did not emit per-alert audit records
 
 **Issue**: `/score/batch` emitted only a summary record (total / succeeded /
 failed counts). Individual alert scores from a 500-alert batch had no individual
@@ -172,7 +172,7 @@ BATCH-2026-09-12" could not be answered from the audit log alone.
 alert (succeeded, schema-mismatch error, and unexpected error paths). The batch
 summary record is retained as a convenience index.
 
-### Finding 2 — MEDIUM: `PayloadSizeLimitMiddleware` bypassable via chunked transfer
+### Finding 2  -  MEDIUM: `PayloadSizeLimitMiddleware` bypassable via chunked transfer
 
 **Issue**: The middleware checked the `Content-Length` request header and rejected
 requests where `Content-Length > max_bytes`. A client sending no `Content-Length`
@@ -185,7 +185,7 @@ exceed `ALERTIQ_MAX_PAYLOAD_BYTES`. Both handlers catch `_BodyTooLargeError` and
 return HTTP 413 with the configured limit. The middleware's Content-Length
 pre-check is retained as a fast-path rejection for compliant clients.
 
-### Finding 3 — MEDIUM: Registry manifest hardcoded `schema_version: 1`
+### Finding 3  -  MEDIUM: Registry manifest hardcoded `schema_version: 1`
 
 **Issue**: `registry.py` `register()` wrote `"schema_version": 1` into the
 manifest entry unconditionally, regardless of the artifact's actual schema
@@ -201,12 +201,12 @@ authoritative version constant.
 ## Test Suite Summary
 
 ```
-tests/serving/test_api.py         53 tests — all 4 endpoints, error paths, compliance checks
-tests/serving/test_artifact.py    21 tests — save/load, checksum verification, key validation
-tests/serving/test_quality.py     17 tests — zero-value and extreme-value detection
-tests/serving/test_registry.py    17 tests — register, champion promotion, version listing
-tests/serving/test_schema.py      19 tests — Pydantic validation, field bounds, batch limits
-tests/serving/test_scorer.py      31 tests — InferenceScorer, SchemaVersionMismatchError, capacity-ranking policy
+tests/serving/test_api.py         53 tests  -  all 4 endpoints, error paths, compliance checks
+tests/serving/test_artifact.py    21 tests  -  save/load, checksum verification, key validation
+tests/serving/test_quality.py     17 tests  -  zero-value and extreme-value detection
+tests/serving/test_registry.py    17 tests  -  register, champion promotion, version listing
+tests/serving/test_schema.py      19 tests  -  Pydantic validation, field bounds, batch limits
+tests/serving/test_scorer.py      31 tests  -  InferenceScorer, SchemaVersionMismatchError, capacity-ranking policy
 ─────────────────────────────────────────────────────────────────────────────
 Total serving                    158 tests
 Total project (all milestones)   597 tests   (0 failed)
@@ -328,7 +328,7 @@ data statistics (−2), no API versioning prefix (−1).
 > We built a Starlette ASGI API that loads a checksummed model artifact from a
 > local registry at startup, validates every incoming request against a strict
 > 24-field Pydantic schema, scores alerts using the capacity-ranking policy
-> (raw probability — no fixed threshold), and records every score event in a
+> (raw probability  -  no fixed threshold), and records every score event in a
 > structured audit log without logging raw feature values.
 >
 > We enforced the human-in-the-loop requirement at the protocol level: every

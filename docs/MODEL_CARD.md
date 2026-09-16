@@ -1,6 +1,6 @@
-# Model Card — AlertIQ AML Alert Triage Scorer
+# Model Card  -  AlertIQ AML Alert Triage Scorer
 
-> **Milestone 3 — Model Robustness & Temporal Stability**
+> **Milestone 3  -  Model Robustness & Temporal Stability**
 > Evaluation date: 2026-09-12 | Mode: fast (100-iter HistGBM)
 
 ---
@@ -11,12 +11,12 @@
 |---|---|
 | **Model name** | AlertIQ Triage Scorer v1 |
 | **Model type** | HistGradientBoostingClassifier (scikit-learn) |
-| **Task** | Binary classification — SAR vs non-SAR alert prioritisation |
+| **Task** | Binary classification  -  SAR vs non-SAR alert prioritisation |
 | **Primary operating mode** | **Capacity-ranking** (top-K review at 20% capacity) |
 | **Secondary mode** | Threshold-based classification (val-set threshold) |
 | **Training algorithm** | Gradient boosted trees with native missing-value handling |
 | **Early stopping** | Phase-1 training: val-set early stopping; Phase-2: fixed max_iter |
-| **Primary metric** | Recall@20% — proportion of SARs recovered by reviewing top 20% of alerts |
+| **Primary metric** | Recall@20%  -  proportion of SARs recovered by reviewing top 20% of alerts |
 | **Secondary metrics** | AUC-ROC, AUC-PR, ECE |
 
 ---
@@ -41,7 +41,7 @@ Support threshold-based classification when binary alert disposition is required
 
 | Field | Value |
 |---|---|
-| **Source** | Synthetic AlertIQ simulator — 6 months (Jan–Jun 2023) |
+| **Source** | Synthetic AlertIQ simulator  -  6 months (Jan–Jun 2023) |
 | **Total alerts** | ~56,195 across all walk-forward folds |
 | **SAR rate** | ~9.4–9.9% across windows |
 | **Rule groups** | R01, R02, R04, R06, R07, R08, R09, R11, R12, R13, R15 (11 typologies) |
@@ -66,7 +66,7 @@ The training data is entirely synthetic. Performance metrics reported here refle
 
 ---
 
-## Evaluation — Walk-Forward Results (3 Windows)
+## Evaluation  -  Walk-Forward Results (3 Windows)
 
 ### Capacity-ranking performance (PRIMARY mode)
 
@@ -124,11 +124,11 @@ ECE threshold for acceptability: 0.05. All windows are comfortably below this th
 | R06 | ~92–106 | ✓ Yes | ✗ **FAIL** | Recall@20% ≈ 0.39–0.44; borderline but fails |
 | R12 | 60–67 | ✓ Yes | ✗ **FAIL** | Near-100% SAR rate; ranking uninformative |
 | R01 | ~53–54 | ✓ Yes | ✗ **FAIL** | Near-100% SAR rate; same issue |
-| R02 | ~45–48 | Below floor | — (pass by default) | Insufficient holdout SARs |
-| R04 | ~39–52 | Below floor | — (pass by default) | Below minimum support |
-| Others | <30 | Below floor | — (pass by default) | Insufficient holdout SARs |
+| R02 | ~45–48 | Below floor |  -  (pass by default) | Insufficient holdout SARs |
+| R04 | ~39–52 | Below floor |  -  (pass by default) | Below minimum support |
+| Others | <30 | Below floor |  -  (pass by default) | Insufficient holdout SARs |
 
-**Root cause of failures (R09, R06):** These typologies have high SAR rates (>40%), making score-based ranking less effective — almost every alert is a SAR so precision at capacity ≠ recall efficiency. The model is not failing to assign high scores; it is failing to differentiate within very-high-SAR-rate groups.
+**Root cause of failures (R09, R06):** These typologies have high SAR rates (>40%), making score-based ranking less effective  -  almost every alert is a SAR so precision at capacity ≠ recall efficiency. The model is not failing to assign high scores; it is failing to differentiate within very-high-SAR-rate groups.
 
 **Root cause of R12/R01 failures:** These are near-100% SAR rate groups. The model assigns uniformly high scores; the recall@20% metric is penalised because coverage is fixed at 20% while the SAR density is much higher.
 
@@ -147,9 +147,9 @@ ECE threshold for acceptability: 0.05. All windows are comfortably below this th
 
 **Key findings:**
 - The model is robust to volume surges, jurisdiction shifts, and extreme class imbalance (S01, S02, S06).
-- **S03 (missing features):** Near-threshold recall degradation (−9.3%) — data quality monitoring is required.
+- **S03 (missing features):** Near-threshold recall degradation (−9.3%)  -  data quality monitoring is required.
 - **S04 (R08 removed):** Recall drops to 0.47 because R08 comprises ~80% of alerts; without these alerts the remaining population is harder to rank.
-- **S05 (novel typology):** Severe recall degradation as expected — the model has never seen this combination (R08 + extreme volume + high-risk jurisdiction labelled as SAR). This is the correct behaviour from a safety perspective; it does not mean the model is wrong.
+- **S05 (novel typology):** Severe recall degradation as expected  -  the model has never seen this combination (R08 + extreme volume + high-risk jurisdiction labelled as SAR). This is the correct behaviour from a safety perspective; it does not mean the model is wrong.
 
 ---
 
@@ -169,8 +169,8 @@ ECE threshold for acceptability: 0.05. All windows are comfortably below this th
 | T10 | P2 | AUC-ROC drift | \|Δ\| > 0.05 vs prev | Investigate |
 
 **Triggers fired in M3 evaluation:**
-- **T06 (P1)** — fired on all three windows due to `f23_prior_alerts_90d` PSI = 14.39 (monotonically increasing cumulative feature; this is a simulator artefact but the trigger correctly identifies the shift).
-- **T08 (P2)** — fired Window-1→Window-2 due to threshold drift of 0.173 (0.056→0.229).
+- **T06 (P1)**  -  fired on all three windows due to `f23_prior_alerts_90d` PSI = 14.39 (monotonically increasing cumulative feature; this is a simulator artefact but the trigger correctly identifies the shift).
+- **T08 (P2)**  -  fired Window-1→Window-2 due to threshold drift of 0.173 (0.056→0.229).
 
 ---
 

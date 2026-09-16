@@ -1,8 +1,8 @@
-# AlertIQ — Milestone 1 Completion Report
+# AlertIQ  -  Milestone 1 Completion Report
 
 **Date:** 2026-09-11  
 **Milestone:** Simulation Engine & TMS Rule Engine  
-**Status:** ✅ COMPLETE — all quality gates passed
+**Status:** ✅ COMPLETE  -  all quality gates passed
 
 ---
 
@@ -32,7 +32,7 @@
 
 | Module | Lines | Purpose |
 |--------|-------|---------|
-| `config.py` | 223 | `SimulationConfig` — single frozen config, Pydantic v2, validated |
+| `config.py` | 223 | `SimulationConfig`  -  single frozen config, Pydantic v2, validated |
 | `entities.py` | 332 | `Account`, `Transaction`, `Alert`, `SimulationResult`, enums |
 | `population.py` | 293 | Seeded account population generator with risk-stratified sampling |
 | `transactions.py` | 214 | Daily transaction generator (routine + typology activation) |
@@ -81,7 +81,7 @@
 
 ### ADR-05: Global (account_id, rule_id, triggered_date) deduplication
 **Decision:** `seen_alert_keys: set[tuple[str, str, date]]` maintained across the full simulation run.  
-**Rationale:** Transaction-based rules (e.g., R06 Round Amounts) set `triggered_date = txn.txn_date` rather than the evaluation date. As the 30-day rolling window slides, the same triggering transaction re-appears each day, causing the rule to re-fire with the same triggered_date — producing thousands of duplicates without global deduplication. Within-day deduplication (the `seen_rules` set) only blocks same-date re-fires within a single evaluation call.
+**Rationale:** Transaction-based rules (e.g., R06 Round Amounts) set `triggered_date = txn.txn_date` rather than the evaluation date. As the 30-day rolling window slides, the same triggering transaction re-appears each day, causing the rule to re-fire with the same triggered_date  -  producing thousands of duplicates without global deduplication. Within-day deduplication (the `seen_rules` set) only blocks same-date re-fires within a single evaluation call.
 
 ### ADR-06: R03 ratio-based velocity spike detection
 **Decision:** R03 fires when `recent_7d_count / (baseline_30d × 7/30) >= 2.5`, with minimum absolute count of 10.  
@@ -89,56 +89,56 @@
 
 ### ADR-07: Ground truth formula
 **Decision:** `true_sar = (account.risk_category == ACTIVE_ML) AND (alert.triggered_by_typology_txn == True)`  
-**Rationale:** Reflects the simulation's internal oracle — only accounts known to be running a ML typology, and only alerts triggered by those typology transactions, are labelled positive. This gives the ML triage model a meaningful signal while keeping the label conservative (typology-free alerts from ML accounts are negative, matching analyst reality).
+**Rationale:** Reflects the simulation's internal oracle  -  only accounts known to be running a ML typology, and only alerts triggered by those typology transactions, are labelled positive. This gives the ML triage model a meaningful signal while keeping the label conservative (typology-free alerts from ML accounts are negative, matching analyst reality).
 
 ### ADR-08: Features contain no ground-truth labels
 **Decision:** `features.py` computes only observable transaction statistics; `account.risk_category`, `txn.is_typology`, and `alert.true_sar` are explicitly excluded.  
-**Rationale:** Any leakage of these fields would make triage model evaluation meaningless — the model would memorise rather than learn. Verified by architecture boundary inspection.
+**Rationale:** Any leakage of these fields would make triage model evaluation meaningless  -  the model would memorise rather than learn. Verified by architecture boundary inspection.
 
 ### ADR-09: Dormancy pre-assignment in population generator
 **Decision:** Accounts with probability `_DORMANT_PROB[risk]` receive a `last_txn_date` set to 90–200 days before simulation start.  
-**Rationale:** Without pre-simulation dormancy, R05 can only fire if an account goes 90+ days without a transaction during the 365-day simulation — rare and uncontrollable. Pre-assignment gives the simulation control over how many dormant-account scenarios exist.
+**Rationale:** Without pre-simulation dormancy, R05 can only fire if an account goes 90+ days without a transaction during the 365-day simulation  -  rare and uncontrollable. Pre-assignment gives the simulation control over how many dormant-account scenarios exist.
 
 ---
 
 ## 4. Quality Gate Results
 
-### Pass 1 & 2 — Staff Engineer + Data Scientist Review
+### Pass 1 & 2  -  Staff Engineer + Data Scientist Review
 
-**Label balance:** true_sar=7.9%, false_sar=92.1% — realistic for AML alert review workloads.  
-**ML density ratio:** Active-ML accounts generate 4.7× more alerts than legitimate accounts — signal is present and learnable.  
+**Label balance:** true_sar=7.9%, false_sar=92.1%  -  realistic for AML alert review workloads.  
+**ML density ratio:** Active-ML accounts generate 4.7× more alerts than legitimate accounts  -  signal is present and learnable.  
 **Feature completeness:** All 24 features computed for every alert, zero gaps.  
 **Feature ranges:** All features verified finite (no NaN/Inf) on seed=42 run.
 
-### Pass 3 — QA Review
+### Pass 3  -  QA Review
 
 **Finding (Critical):** 5,339 duplicate (account, rule, triggered_date) combos.  
 **Root cause:** Transaction-based rules re-fired daily as triggering transactions stayed in the rolling 30-day window.  
 **Fix:** Global `seen_alert_keys` set in runner. Duplicates eliminated to 0.
 
-### Pass 4 — Adversarial Review
+### Pass 4  -  Adversarial Review
 
-**Finding (Critical):** R03 fired 16,874 times for 200 accounts — effectively every account every day.  
+**Finding (Critical):** R03 fired 16,874 times for 200 accounts  -  effectively every account every day.  
 **Root cause:** `velocity_threshold_count=20` is far below typical transaction volumes (~83–153 transactions per 30 days).  
 **Fix:** Replaced absolute count check with ratio-based spike detection (`velocity_spike_ratio=2.5`). R03 counts reduced to 1,857 (realistic spike detection).
 
-### Pass 5 — Architecture Boundaries
+### Pass 5  -  Architecture Boundaries
 
-**Ground-truth leakage scan:** Zero. `is_typology`, `risk_category`, `true_sar` references in `features.py` are module docstring only — not in computation code.  
+**Ground-truth leakage scan:** Zero. `is_typology`, `risk_category`, `true_sar` references in `features.py` are module docstring only  -  not in computation code.  
 **Confirmed boundary:** Feature computation uses only transaction amounts, dates, channels, jurisdictions, and counterparty flags.
 
-### Pass 6 — Ground Truth Integrity
+### Pass 6  -  Ground Truth Integrity
 
 **`verify_ground_truth_integrity()` result:** 0 errors across 19,277 alerts.  
 **Invariants verified:** No alert labelled `true_sar=True` from a non-active-ML account; no alert labelled `true_sar=None` after assignment; no alert with `triggered_by_typology_txn=True` from a non-active-ML account labelled `false`.
 
-### Pass 7 — Reproducibility
+### Pass 7  -  Reproducibility
 
-**Structural fingerprint (sha256[:16]):** `0311687a81d805ab` — identical across two independent runs with the same config.  
+**Structural fingerprint (sha256[:16]):** `0311687a81d805ab`  -  identical across two independent runs with the same config.  
 **Fields compared:** account_id, rule_id, triggered_date, true_sar, triggered_by_typology_txn, f01_txn_count_30d.  
 **Alert UUIDs:** Intentionally non-seeded (random per run). Documented in `runner.py` module docstring.
 
-### Pass 8 — Fix All Criticals
+### Pass 8  -  Fix All Criticals
 
 | Finding | Severity | Status |
 |---------|----------|--------|
@@ -186,23 +186,23 @@ Typology transactions by type:
   professional_ml:     83
 ```
 
-**Note on R08:** High count reflects that PEP/adverse-media rule fires on every transaction above €2,000 for flagged accounts. This is architecturally correct — the rule is an account-level risk flag, not a pattern detector. In a production setting this rule would typically suppress after the first alert per account per review period; this is listed as technical debt below.
+**Note on R08:** High count reflects that PEP/adverse-media rule fires on every transaction above €2,000 for flagged accounts. This is architecturally correct  -  the rule is an account-level risk flag, not a pattern detector. In a production setting this rule would typically suppress after the first alert per account per review period; this is listed as technical debt below.
 
 ---
 
 ## 6. Known Limitations
 
-1. **R08 dominates alert volume** — PEP/adverse-media rule fires on every qualifying transaction. Production TMS systems suppress subsequent alerts after review. No suppression logic exists in Milestone 1.
+1. **R08 dominates alert volume**  -  PEP/adverse-media rule fires on every qualifying transaction. Production TMS systems suppress subsequent alerts after review. No suppression logic exists in Milestone 1.
 
-2. **R11, R13 require larger populations** — trade_based and real_estate typologies have 10% and 12% assignment probability among ~5% active-ML accounts. In a 200-account run (~10 ML accounts), these typologies often aren't assigned. They do fire correctly at 500+ accounts.
+2. **R11, R13 require larger populations**  -  trade_based and real_estate typologies have 10% and 12% assignment probability among ~5% active-ML accounts. In a 200-account run (~10 ML accounts), these typologies often aren't assigned. They do fire correctly at 500+ accounts.
 
-3. **No inter-account network modelling** — typology transactions are generated within the account's own transaction stream. Layering (R10) detects within-account rapid movement, not true multi-hop fund flows across accounts.
+3. **No inter-account network modelling**  -  typology transactions are generated within the account's own transaction stream. Layering (R10) detects within-account rapid movement, not true multi-hop fund flows across accounts.
 
-4. **Synthetic data quality ceiling** — Ground truth is defined by simulation oracle, not labelled by domain experts. Real AML data is required to validate that simulated typologies produce realistic patterns.
+4. **Synthetic data quality ceiling**  -  Ground truth is defined by simulation oracle, not labelled by domain experts. Real AML data is required to validate that simulated typologies produce realistic patterns.
 
-5. **Runtime scales super-linearly** — 200 accounts × 90 days runs in 8s; 500 accounts × 180 days times out at >90s on this container. The inner loop iterates all accounts × all rules per day with O(n) transaction list scans. Production use requires account-bucketed incremental evaluation or vectorised rule engines.
+5. **Runtime scales super-linearly**  -  200 accounts × 90 days runs in 8s; 500 accounts × 180 days times out at >90s on this container. The inner loop iterates all accounts × all rules per day with O(n) transaction list scans. Production use requires account-bucketed incremental evaluation or vectorised rule engines.
 
-6. **No multi-account structuring** — structuring detection (R01) looks at one account's own deposits. Real structuring often spans multiple accounts at the same institution; the current model cannot detect this.
+6. **No multi-account structuring**  -  structuring detection (R01) looks at one account's own deposits. Real structuring often spans multiple accounts at the same institution; the current model cannot detect this.
 
 ---
 
@@ -263,7 +263,7 @@ docs/MILESTONE_1_COMPLETION.md  (this file)
 ## 9. Recommended Git Commit
 
 ```
-feat(simulation): Milestone 1 — deterministic AML simulation engine
+feat(simulation): Milestone 1  -  deterministic AML simulation engine
 
 Implements the complete simulation engine for AlertIQ Milestone 1:
 

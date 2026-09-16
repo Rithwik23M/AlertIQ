@@ -1,4 +1,4 @@
-# AlertIQ — Operations Runbook
+# AlertIQ  -  Operations Runbook
 
 This runbook covers the operational procedures for the AlertIQ scoring API running on Google Cloud Run. It is structured as a decision tree: identify the symptom, follow the diagnosis steps, apply the appropriate remediation.
 
@@ -42,7 +42,7 @@ Expected healthy response:
 
 `status: "degraded"` means the API is running but no model is loaded. Scoring endpoints return 503.
 
-`git_sha` and `image_digest` are `null` in local development. In a deployed Cloud Run revision, both should be populated — a `null` value indicates the CD pipeline did not inject the traceability environment variables correctly.
+`git_sha` and `image_digest` are `null` in local development. In a deployed Cloud Run revision, both should be populated  -  a `null` value indicates the CD pipeline did not inject the traceability environment variables correctly.
 
 ### Metrics endpoint
 
@@ -74,7 +74,7 @@ Navigate to: **Cloud Run → alertiq-api-staging → Metrics** (region: europe-w
 
 ## Runbook procedures
 
-### Degraded mode — no model loaded
+### Degraded mode  -  no model loaded
 
 **Symptom:** `/health` returns `"model_loaded": false` or scoring endpoints return 503.
 
@@ -149,7 +149,7 @@ python scripts/smoke_test.py --base-url "${SERVICE_URL}"
 
 **When to use:** A newly deployed model produces unexpected scores (too many or too few high-risk outputs) but the application itself is healthy.
 
-**When NOT to use:** If the application has a bug, roll back the application instead — a model rollback in the same image does not fix application bugs.
+**When NOT to use:** If the application has a bug, roll back the application instead  -  a model rollback in the same image does not fix application bugs.
 
 **Procedure:**
 
@@ -202,7 +202,7 @@ python scripts/performance_benchmark.py \
 
 | Cause | Remediation |
 |-------|-------------|
-| Cold start (first request after scale-to-zero) | Expected with `minScale: 0`; latency improves after warm-up. For SLO-sensitive deployments, consider `minScale: 1` — see §Billing Trade-off. |
+| Cold start (first request after scale-to-zero) | Expected with `minScale: 0`; latency improves after warm-up. For SLO-sensitive deployments, consider `minScale: 1`  -  see §Billing Trade-off. |
 | Batch size too large | Reduce batch size; 100 alerts is a reasonable maximum |
 | Model artifact too large | Check model size; retrain with fewer trees if necessary |
 | Container memory pressure | Increase `memory` limit in the service YAML |
@@ -222,7 +222,7 @@ For a portfolio deployment, `minScale: 0` is the correct default. Change `minSca
 
 **Symptom:** `/metrics` shows `audit_failures > 0`.
 
-**What this means:** One or more audit records failed to write. The scoring response was still returned to the caller — the failure was absorbed (fail-open). Missing audit records are a compliance concern in any environment where audit completeness is required.
+**What this means:** One or more audit records failed to write. The scoring response was still returned to the caller  -  the failure was absorbed (fail-open). Missing audit records are a compliance concern in any environment where audit completeness is required.
 
 #### Audit Durability Classification
 
@@ -287,9 +287,9 @@ gcloud run services describe alertiq-api-staging \
 
 **Remediation:**
 
-Option A — Reduce batch size on the client side (recommended for most cases).
+Option A  -  Reduce batch size on the client side (recommended for most cases).
 
-Option B — Increase the limit in the Cloud Run service YAML:
+Option B  -  Increase the limit in the Cloud Run service YAML:
 ```yaml
 env:
   - name: ALERTIQ_MAX_PAYLOAD_BYTES
@@ -316,7 +316,7 @@ ALERTIQ_AUDIT_LOG_PATH="" python -m pytest tests/ \
 # Add tests for the uncovered lines, then re-run.
 ```
 
-The coverage threshold is set in `pyproject.toml` (`fail_under = 70`). Do not lower this threshold — add tests instead.
+The coverage threshold is set in `pyproject.toml` (`fail_under = 70`). Do not lower this threshold  -  add tests instead.
 
 ---
 

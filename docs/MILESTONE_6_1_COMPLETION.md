@@ -1,6 +1,6 @@
-# AlertIQ — Milestone 6.1 Completion Report
+# AlertIQ  -  Milestone 6.1 Completion Report
 
-**Milestone:** M6.1 — Investigation Integrity Hardening  
+**Milestone:** M6.1  -  Investigation Integrity Hardening  
 **Status:** ✅ COMPLETE  
 **Completed:** 2026-09-13  
 **Total Python tests passing:** 663 / 663  
@@ -12,7 +12,7 @@
 
 Milestone 6.1 identified and corrected a critical temporal evidence integrity violation inherited from M6, then hardened the investigation workspace across ten areas: temporal filtering, data provenance, model lineage, persistence architecture, historical immutability, test coverage, E2E journey validation, explainability audit, demo data quality, and adversarial review.
 
-The central defect was that `transactions.csv` had been generated from a 2024 simulation run, making it impossible for any transaction to satisfy `txn_date <= alert_date` when alerts were dated 2023. M6 worked around this by removing the temporal filter — an AML investigation integrity violation. M6.1 regenerated `transactions.csv` from the canonical 2023 simulation, restored the filter, and proved it holds at every level from SQL to HTTP API.
+The central defect was that `transactions.csv` had been generated from a 2024 simulation run, making it impossible for any transaction to satisfy `txn_date <= alert_date` when alerts were dated 2023. M6 worked around this by removing the temporal filter  -  an AML investigation integrity violation. M6.1 regenerated `transactions.csv` from the canonical 2023 simulation, restored the filter, and proved it holds at every level from SQL to HTTP API.
 
 **Security controls established in M6 and mandatory for all future milestones:**
 
@@ -30,7 +30,7 @@ The central defect was that `transactions.csv` had been generated from a 2024 si
 
 **Defect found and corrected.**
 
-M6 used `transactions.csv` from a 2024 simulation (date range 2024-01-01 → 2024-03-30), incompatible with 2023 alerts. Rather than regenerate the dataset, M6 removed the temporal filter from `get_alert_transactions()`. This meant an analyst investigating a 2023 alert would have seen no transactions — or, if the filter had been reactivated with the wrong dataset, would have seen future transactions as historical evidence.
+M6 used `transactions.csv` from a 2024 simulation (date range 2024-01-01 → 2024-03-30), incompatible with 2023 alerts. Rather than regenerate the dataset, M6 removed the temporal filter from `get_alert_transactions()`. This meant an analyst investigating a 2023 alert would have seen no transactions  -  or, if the filter had been reactivated with the wrong dataset, would have seen future transactions as historical evidence.
 
 **M6.1 resolution:**
 
@@ -74,7 +74,7 @@ Full dual-dataset lineage established for `alerts.csv` and `transactions.csv`.
 | v0 (DISCARDED) | unknown | 63,810 | 2024-01-01→2024-03-30 | M6 | Wrong simulation; 2024 dates incompatible with 2023 alerts |
 | v1 (current) | `54094bd3` | 191,364 | 2023-01-01→2023-06-29 | M6.1 | Canonical 2023 generation |
 
-**Versioned Derived Artefact Policy (P1–P6) established** — see `DATA_PROVENANCE.md §8`.
+**Versioned Derived Artefact Policy (P1–P6) established**  -  see `DATA_PROVENANCE.md §8`.
 
 ---
 
@@ -112,7 +112,7 @@ The persistence layer is explicitly labelled:
 
 ### Current implementation
 
-`alert_store.py` — SQLite WAL, 6 tables, procedural function API. Suitable for single-server portfolio demo.
+`alert_store.py`  -  SQLite WAL, 6 tables, procedural function API. Suitable for single-server portfolio demo.
 
 ### Cloud Run limitation documented
 
@@ -130,7 +130,7 @@ Estimated engineering effort: 2–3 days for a developer familiar with the codeb
 
 ---
 
-## Area 5: Historical Model Evidence — Scoring Snapshot Immutability
+## Area 5: Historical Model Evidence  -  Scoring Snapshot Immutability
 
 **Verified by automated test.**
 
@@ -151,9 +151,9 @@ The `upsert_alert()` function is idempotent for re-seeding. No API route (GET or
 
 ## Area 6: Frontend Test Execution
 
-**Status: BLOCKED — environmental limitation.**
+**Status: BLOCKED  -  environmental limitation.**
 
-The Jest test suite requires `@testing-library/jest-dom`. Installation of this package is blocked at the cloud egress proxy level (HTTP 403 — organization security policy denial for `registry.npmjs.org`). This is not a code defect.
+The Jest test suite requires `@testing-library/jest-dom`. Installation of this package is blocked at the cloud egress proxy level (HTTP 403  -  organization security policy denial for `registry.npmjs.org`). This is not a code defect.
 
 **Tests confirmed present:** `src/frontend/tests/` contains the Jest test files created in M6.
 
@@ -172,15 +172,15 @@ The test simulates the complete investigation lifecycle against the real HTTP AP
 
 | Step | What is tested |
 |------|---------------|
-| 1 — Queue | Alert appears in paginated queue with correct risk score |
-| 2 — Detail | Full alert detail retrievable with features; 404 for missing alert |
-| 3 — Temporal | 2 pre-alert transactions visible; 1 post-alert transaction excluded; all returned dates ≤ alert_date |
-| 4 — Open | Status transitions from `new` → `in_progress` |
-| 5 — Note | Note accepted; retrievable; does not change risk score |
-| 6 — Decision | Decision accepted; retrievable; rationale preserved |
-| 7 — History | Audit trail records open event with timestamp; events are chronological |
-| 8 — Immutability | risk_score and model_version unchanged after full open → note → decision journey |
-| 9 — Security | `true_sar` absent from queue, detail, transactions, history, notes, and decisions responses |
+| 1  -  Queue | Alert appears in paginated queue with correct risk score |
+| 2  -  Detail | Full alert detail retrievable with features; 404 for missing alert |
+| 3  -  Temporal | 2 pre-alert transactions visible; 1 post-alert transaction excluded; all returned dates ≤ alert_date |
+| 4  -  Open | Status transitions from `new` → `in_progress` |
+| 5  -  Note | Note accepted; retrievable; does not change risk score |
+| 6  -  Decision | Decision accepted; retrievable; rationale preserved |
+| 7  -  History | Audit trail records open event with timestamp; events are chronological |
+| 8  -  Immutability | risk_score and model_version unchanged after full open → note → decision journey |
+| 9  -  Security | `true_sar` absent from queue, detail, transactions, history, notes, and decisions responses |
 
 ### Fixture design
 
@@ -198,7 +198,7 @@ All explainability signals in `GET /alerts/{id}` are produced by `_compute_expla
 
 Each signal type an analyst sees is classified by its epistemic status:
 
-#### FACTUAL_EVIDENCE — Directly observable behavioral facts
+#### FACTUAL_EVIDENCE  -  Directly observable behavioral facts
 
 These signals can, in principle, be independently verified from source transaction and KYC systems. They represent raw observations about the account's behavior over the 30-day window prior to the alert.
 
@@ -214,7 +214,7 @@ These signals can, in principle, be independently verified from source transacti
 | Adverse media flag | `f21_adverse_media_flag` | ≥ 1.0 → Yes |
 | High-risk industry classification | `f22_high_risk_industry` | ≥ 1.0 → Yes |
 
-#### MODEL_SIGNAL — Engineered features used as model inputs
+#### MODEL_SIGNAL  -  Engineered features used as model inputs
 
 These signals are computed from raw transaction data by the feature engineering pipeline. They are inputs to the LightGBM model and also carry investigative meaning, but they are derived ratios rather than direct observations.
 
@@ -228,23 +228,23 @@ These signals are computed from raw transaction data by the feature engineering 
 | High-risk jurisdiction counterparty | `f18_very_high_jur_flag` | ≥ 1.0 → Yes |
 | Model risk score | `risk_score` | Capacity-ranked threshold 0.3972 |
 
-#### HUMAN_DECISION — Analyst-recorded outcomes
+#### HUMAN_DECISION  -  Analyst-recorded outcomes
 
 These are not signals from the data or model. They are analyst annotations recorded during the investigation.
 
 | Signal | Source |
 |--------|--------|
-| Investigation notes | `notes` table — append-only |
-| Investigation decision | `decisions` table — append-only |
-| Investigation status | `investigation_state` table — mutable |
-| Audit trail | `audit_events` table — append-only |
+| Investigation notes | `notes` table  -  append-only |
+| Investigation decision | `decisions` table  -  append-only |
+| Investigation status | `investigation_state` table  -  mutable |
+| Audit trail | `audit_events` table  -  append-only |
 
 ### Integrity guarantees
 
 - All 15 features in `_FEATURE_THRESHOLDS` are sourced from stored feature values in the `alerts.features_json` column.
-- Notable thresholds are hard-coded from population reference statistics derived from simulation training data — they are deterministic and not LLM-generated.
+- Notable thresholds are hard-coded from population reference statistics derived from simulation training data  -  they are deterministic and not LLM-generated.
 - The `"notable"` flag is a boolean comparison (`value >= threshold`), not a model prediction.
-- Binary flag features (f18, f20, f21, f22) display as "Yes" / "No" — the analyst is shown the flag value, not a model interpretation of it.
+- Binary flag features (f18, f20, f21, f22) display as "Yes" / "No"  -  the analyst is shown the flag value, not a model interpretation of it.
 - No signal in `explainability_signals` is synthetic, inferred, or externally fetched.
 
 ---
@@ -311,9 +311,9 @@ The seed script (`scripts/seed_alert_store.py`) seeds from the 2023-canonical `t
 
 **Concern:** What is the test coverage for the serving layer?  
 **Finding:** 194 serving tests pass:
-- `test_temporal_integrity.py`: 12 tests — store-level filter, API-level filter, security controls, immutability
-- `test_investigation_journey.py`: 24 tests — full E2E journey across all 9 endpoints
-- `test_alert_routes.py` and related: 158 tests — route handlers, error cases, validation
+- `test_temporal_integrity.py`: 12 tests  -  store-level filter, API-level filter, security controls, immutability
+- `test_investigation_journey.py`: 24 tests  -  full E2E journey across all 9 endpoints
+- `test_alert_routes.py` and related: 158 tests  -  route handlers, error cases, validation
 
 **Concern:** Are the tests isolated? Can they interfere with each other?  
 **Finding:** Each test fixture creates a fresh SQLite database in `tmp_path` (function-scoped) or `tmp_path_factory.mktemp()` (module-scoped). Env var isolation uses `monkeypatch.setenv()` for function-scoped fixtures and explicit `os.environ` save/restore for module-scoped fixtures. Module reload (`importlib.reload()`) ensures each test picks up the fresh database path.
@@ -321,13 +321,13 @@ The seed script (`scripts/seed_alert_store.py`) seeds from the 2023-canonical `t
 ### Auditor perspective
 
 **Concern:** Is there an audit trail for investigation actions?  
-**Finding:** Yes. The `audit_events` table records every `alert_opened`, `note_added`, `decision_recorded`, and status change with analyst ID, timestamp, and details JSON. The table is append-only — no UPDATE or DELETE is exposed through any route or store function.
+**Finding:** Yes. The `audit_events` table records every `alert_opened`, `note_added`, `decision_recorded`, and status change with analyst ID, timestamp, and details JSON. The table is append-only  -  no UPDATE or DELETE is exposed through any route or store function.
 
 **Concern:** Can an analyst change a previously recorded decision?  
 **Finding:** No. The `decisions` table is append-only. No route exposes a DELETE or UPDATE for decisions. An analyst who changes their assessment must record a new decision.
 
 **Concern:** Can the risk score be changed retroactively after a model retrain?  
-**Finding:** No. Scoring snapshots are pinned at seed time. Even if a new model were trained and promoted, existing alert records in the investigation store retain the risk score, model version, and scoring timestamp from the original seeding run. Re-seeding would be required to apply new scores, which would overwrite investigation state — a documented operational constraint, not a silent data mutation.
+**Finding:** No. Scoring snapshots are pinned at seed time. Even if a new model were trained and promoted, existing alert records in the investigation store retain the risk score, model version, and scoring timestamp from the original seeding run. Re-seeding would be required to apply new scores, which would overwrite investigation state  -  a documented operational constraint, not a silent data mutation.
 
 ---
 
@@ -341,7 +341,7 @@ The seed script (`scripts/seed_alert_store.py`) seeds from the 2023-canonical `t
 | `tests/triage/test_integration_real_data.py` | 9 | ✅ 9/9 pass (updated to v3) |
 | All other tests | 460 | ✅ 460/460 pass |
 | **Total** | **663** | **✅ 663/663** |
-| Frontend (Jest) | — | ⚠️ Blocked — npm 403 in cloud environment |
+| Frontend (Jest) |  -  | ⚠️ Blocked  -  npm 403 in cloud environment |
 
 ---
 
@@ -352,7 +352,7 @@ The seed script (`scripts/seed_alert_store.py`) seeds from the 2023-canonical `t
 | `docs/DATA_PROVENANCE.md` | **Rewritten** | Dual-dataset lineage, version history, SHA verification, artefact policy |
 | `docs/MODEL_LINEAGE.md` | **Created** | Model training provenance, milestone history, governance controls |
 | `docs/PERSISTENCE_ARCHITECTURE.md` | **Created** | InvestigationRepository interface, Cloud Run limitation, production path |
-| `docs/MILESTONE_6_1_COMPLETION.md` | **Created** | This document — complete M6.1 evidence record |
+| `docs/MILESTONE_6_1_COMPLETION.md` | **Created** | This document  -  complete M6.1 evidence record |
 
 ---
 
@@ -378,5 +378,5 @@ Per the M6.1 specification: **Do NOT begin Milestone 7 automatically.** This doc
 
 ---
 
-*AlertIQ Milestone 6.1 — Investigation Integrity Hardening*  
+*AlertIQ Milestone 6.1  -  Investigation Integrity Hardening*  
 *Completed 2026-09-13*

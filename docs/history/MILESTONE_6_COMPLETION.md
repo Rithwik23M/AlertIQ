@@ -1,4 +1,4 @@
-# Milestone 6 — Analyst Investigation Workspace: Completion Report
+# Milestone 6  -  Analyst Investigation Workspace: Completion Report
 
 **Date:** 2026-09-13  
 **Status:** ✅ Complete  
@@ -9,7 +9,7 @@
 
 ## 1. Objective
 
-Build the analyst-facing Investigation Workspace — a full-stack Next.js 14 + Starlette application that allows financial crime analysts to review, investigate, and record decisions on AML alerts ranked by the AlertIQ ML model.
+Build the analyst-facing Investigation Workspace  -  a full-stack Next.js 14 + Starlette application that allows financial crime analysts to review, investigate, and record decisions on AML alerts ranked by the AlertIQ ML model.
 
 The workspace is a **decision-support tool**, not an autonomous decision system. All SAR determinations require independent analyst judgement.
 
@@ -49,7 +49,7 @@ The workspace is a **decision-support tool**, not an autonomous decision system.
 │  └──────────────────┘  └──────────────────────────┘  │
 │                         ↕                             │
 │  ┌──────────────────────────────────────────────┐    │
-│  │  alert_store.py — SQLite WAL (alert_store.db) │   │
+│  │  alert_store.py  -  SQLite WAL (alert_store.db) │   │
 │  │  6 tables: alerts, investigation_state,       │    │
 │  │  notes, decisions, audit_events, transactions │    │
 │  └──────────────────────────────────────────────┘    │
@@ -114,7 +114,7 @@ The workspace is a **decision-support tool**, not an autonomous decision system.
 | File | Fix |
 |---|---|
 | `tests/serving/test_api.py` | `no_model_client` fixture: null `_scorer` after lifespan (not before) |
-| `tests/operational/test_failure_modes.py` | Same fixture fix — 4 tests recovered |
+| `tests/operational/test_failure_modes.py` | Same fixture fix  -  4 tests recovered |
 | `tests/triage/test_integration_real_data.py` | Updated dataset SHA-256 (CSV regenerated in earlier milestone) |
 | `docs/DATA_PROVENANCE.md` | Updated SHA-256 fingerprints to match current `alerts.csv` |
 | `src/alertiq/serving/alert_store.py` | Removed stale `txn_date <= alert_date` filter (date mismatch between simulation datasets) |
@@ -130,11 +130,11 @@ Seeds loaded by `python scripts/seed_alert_store.py`:
 | Alerts seeded | 500 |
 | Transactions seeded | 12,746 |
 | Unique accounts | 56 |
-| Risk band — Critical (≥0.80) | 150 (30%) |
-| Risk band — High (0.60–0.79) | 125 (25%) |
-| Risk band — Medium (0.40–0.59) | 125 (25%) |
-| Risk band — Low (0.20–0.39) | 60 (12%) |
-| Risk band — Minimal (<0.20) | 40 (8%) |
+| Risk band  -  Critical (≥0.80) | 150 (30%) |
+| Risk band  -  High (0.60–0.79) | 125 (25%) |
+| Risk band  -  Medium (0.40–0.59) | 125 (25%) |
+| Risk band  -  Low (0.20–0.39) | 60 (12%) |
+| Risk band  -  Minimal (<0.20) | 40 (8%) |
 | Top-20% capacity band | 100 alerts |
 | Model used for scoring | Champion from `models/registry/` |
 
@@ -161,23 +161,23 @@ Seeds loaded by `python scripts/seed_alert_store.py`:
 
 ### Alert Queue (`/`)
 
-- **Capacity banner** — displays count and percentage of alerts in the top-20% priority band; status breakdown; utilisation bar
-- **Filters** — status dropdown, minimum risk score, free-text search (alert ID / account ID), sort field + direction toggle
-- **Paginated table** — queue position, alert ID, account, rule, date, risk badge, status badge, DQ indicator, assigned analyst
-- **Row navigation** — click or `Enter` key → `/alerts/{id}`
-- **Pagination controls** — windowed page numbers; smooth scroll-to-top
+- **Capacity banner**  -  displays count and percentage of alerts in the top-20% priority band; status breakdown; utilisation bar
+- **Filters**  -  status dropdown, minimum risk score, free-text search (alert ID / account ID), sort field + direction toggle
+- **Paginated table**  -  queue position, alert ID, account, rule, date, risk badge, status badge, DQ indicator, assigned analyst
+- **Row navigation**  -  click or `Enter` key → `/alerts/{id}`
+- **Pagination controls**  -  windowed page numbers; smooth scroll-to-top
 
 ### Investigation Workspace (`/alerts/{id}`)
 
-- **Alert header** — breadcrumb, ID, risk/status/DQ badges, open-investigation button
-- **Alert summary card** — all metadata fields including model version and scored timestamp
-- **Risk Signals panel** — threshold-based explainability signals sorted by `notable` flag; show-all toggle; caveat disclaimer
-- **Data Quality detail** — zeroed feature names and extreme-value feature names listed when `quality_warning = true`
-- **Transaction timeline** — Recharts area chart of daily EUR volume (last 60 active days); toggleable transaction table with channel colour-coding and shell-company warning indicators
-- **Decision workflow** — mutually exclusive outcome buttons (Escalate / Needs Review / Close); rationale textarea; submit → POST; decision history list
-- **Investigation notes** — add-note textarea; chronological notes list
-- **Audit trail** — timestamped event log with show-all toggle
-- **Model metadata drawer** — collapsible; shows model version, schema version, raw score, feature count, scored-at timestamp
+- **Alert header**  -  breadcrumb, ID, risk/status/DQ badges, open-investigation button
+- **Alert summary card**  -  all metadata fields including model version and scored timestamp
+- **Risk Signals panel**  -  threshold-based explainability signals sorted by `notable` flag; show-all toggle; caveat disclaimer
+- **Data Quality detail**  -  zeroed feature names and extreme-value feature names listed when `quality_warning = true`
+- **Transaction timeline**  -  Recharts area chart of daily EUR volume (last 60 active days); toggleable transaction table with channel colour-coding and shell-company warning indicators
+- **Decision workflow**  -  mutually exclusive outcome buttons (Escalate / Needs Review / Close); rationale textarea; submit → POST; decision history list
+- **Investigation notes**  -  add-note textarea; chronological notes list
+- **Audit trail**  -  timestamped event log with show-all toggle
+- **Model metadata drawer**  -  collapsible; shows model version, schema version, raw score, feature count, scored-at timestamp
 
 ---
 
@@ -193,11 +193,11 @@ All 627 tests pass. No regressions from Milestone 6 backend work.
 
 ## 9. Known Limitations
 
-1. **Authentication** — no user authentication layer. Demo uses hardcoded `analyst_id = "analyst-001"`. Production would require OAuth / SSO with session-bound analyst identity.
-2. **Frontend tests not executed in CI** — Jest/RTL tests written but the project does not yet have a `ci.yml` that runs `npm test`. To add: `npm ci && npm test` step after `npm run build`.
-3. **Recharts SSR** — Recharts does not support server-side rendering; the transaction chart is rendered client-side only (no flash because the chart container is inside `AlertDetailClient`, a Client Component with an explicit loading state).
-4. **Date mismatch between simulation datasets** — alerts CSV (2023 dates) and transactions CSV (2024 dates) are from different simulation runs. The `get_alert_transactions` query returns all transactions for the account regardless of date to compensate; this is labelled in the code.
-5. **Pagination only on queue** — the individual alert's transaction table is capped at 200 rows server-side with a note displayed when truncated; full cursor-based pagination is a Version 2 item.
+1. **Authentication**  -  no user authentication layer. Demo uses hardcoded `analyst_id = "analyst-001"`. Production would require OAuth / SSO with session-bound analyst identity.
+2. **Frontend tests not executed in CI**  -  Jest/RTL tests written but the project does not yet have a `ci.yml` that runs `npm test`. To add: `npm ci && npm test` step after `npm run build`.
+3. **Recharts SSR**  -  Recharts does not support server-side rendering; the transaction chart is rendered client-side only (no flash because the chart container is inside `AlertDetailClient`, a Client Component with an explicit loading state).
+4. **Date mismatch between simulation datasets**  -  alerts CSV (2023 dates) and transactions CSV (2024 dates) are from different simulation runs. The `get_alert_transactions` query returns all transactions for the account regardless of date to compensate; this is labelled in the code.
+5. **Pagination only on queue**  -  the individual alert's transaction table is capped at 200 rows server-side with a note displayed when truncated; full cursor-based pagination is a Version 2 item.
 
 ---
 
@@ -221,7 +221,7 @@ npm run dev
 
 ---
 
-## 11. Adversarial Review — Outstanding Risks
+## 11. Adversarial Review  -  Outstanding Risks
 
 | Risk | Severity | Mitigation |
 |---|---|---|

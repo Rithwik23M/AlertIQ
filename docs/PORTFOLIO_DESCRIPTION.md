@@ -1,4 +1,4 @@
-# AlertIQ — Portfolio Description
+# AlertIQ  -  Portfolio Description
 
 Material for CV, LinkedIn, portfolio sites, and recruiter outreach. Choose the version appropriate to the audience and word-count limit.
 
@@ -6,7 +6,7 @@ Material for CV, LinkedIn, portfolio sites, and recruiter outreach. Choose the v
 
 ## One-Line Pitch
 
-**AlertIQ** — AML alert triage engine that ranks 55,000+ synthetic financial crime alerts using LightGBM, achieving 100% SAR recall at 20% investigator capacity.
+**AlertIQ**  -  AML alert triage engine that ranks 55,000+ synthetic financial crime alerts using LightGBM, achieving 100% SAR recall at 20% investigator capacity.
 
 ---
 
@@ -18,7 +18,7 @@ Built an end-to-end AML alert triage engine on synthetic transaction data. Light
 
 ## 100-Word Description (Portfolio site / GitHub bio)
 
-AlertIQ is an Anti-Money Laundering alert triage and investigation platform. The core problem: banks generate more AML alerts than investigators can review. AlertIQ ranks alerts by estimated SAR probability using LightGBM trained on 24 behavioural features — velocity ratios, jurisdiction entropy, structuring indicators, PEP flags — engineered from a purpose-built transaction simulator with 55,896 alerts across 8 money-laundering typologies.
+AlertIQ is an Anti-Money Laundering alert triage and investigation platform. The core problem: banks generate more AML alerts than investigators can review. AlertIQ ranks alerts by estimated SAR probability using LightGBM trained on 24 behavioural features  -  velocity ratios, jurisdiction entropy, structuring indicators, PEP flags  -  engineered from a purpose-built transaction simulator with 55,896 alerts across 8 money-laundering typologies.
 
 The ML engine achieves AUC-ROC 0.979 and Recall@20% of 100% on held-out simulated data. A Starlette REST API and Next.js frontend provide a full investigation workspace with temporal evidence integrity, deterministic explainability signals, and an immutable audit trail. Deployed on Google Cloud Run via Terraform.
 
@@ -28,17 +28,17 @@ The ML engine achieves AUC-ROC 0.979 and Recall@20% of 100% on held-out simulate
 
 **The Problem**
 
-Anti-Money Laundering compliance teams generate thousands of alerts daily. Investigators can realistically review only 15–25% of the queue. Without prioritisation, alert review is first-in-first-out — SAR-bearing cases have the same probability of review as false positives.
+Anti-Money Laundering compliance teams generate thousands of alerts daily. Investigators can realistically review only 15–25% of the queue. Without prioritisation, alert review is first-in-first-out  -  SAR-bearing cases have the same probability of review as false positives.
 
 **The Solution**
 
 AlertIQ is a full-stack AML alert triage and investigation system. The ML engine trains a LightGBM gradient boosting classifier on 24 behavioural features engineered from a purpose-built transaction simulator: 55,896 alerts, 191,364 transactions, 3,000 accounts, 8 money-laundering typologies (structuring, layering, shell company, trade-based, virtual assets, and others).
 
-The training protocol uses leakage-safe temporal splits — training data is strictly older than validation and holdout — and a two-phase training approach that maximises labelled data usage. The threshold is set at the 80th percentile of validation scores, directly implementing a "review top 20%" capacity policy. On held-out data the model achieves AUC-ROC 0.979 and Recall@20% of 100%, compared to 20.3% for random and 34.8% for a severity-only baseline.
+The training protocol uses leakage-safe temporal splits  -  training data is strictly older than validation and holdout  -  and a two-phase training approach that maximises labelled data usage. The threshold is set at the 80th percentile of validation scores, directly implementing a "review top 20%" capacity policy. On held-out data the model achieves AUC-ROC 0.979 and Recall@20% of 100%, compared to 20.3% for random and 34.8% for a severity-only baseline.
 
 **The Investigation Workspace**
 
-A Starlette REST API (9 endpoints) and Next.js frontend provide a complete investigation environment. Compliance with AML evidence standards is enforced by design: transaction history uses a `WHERE txn_date <= alert_date` filter (temporal integrity), ground truth labels are never returned via any endpoint, and analyst notes are never forwarded externally. Explainability signals are computed deterministically from stored features — no LLM, no external calls.
+A Starlette REST API (9 endpoints) and Next.js frontend provide a complete investigation environment. Compliance with AML evidence standards is enforced by design: transaction history uses a `WHERE txn_date <= alert_date` filter (temporal integrity), ground truth labels are never returned via any endpoint, and analyst notes are never forwarded externally. Explainability signals are computed deterministically from stored features  -  no LLM, no external calls.
 
 **Engineering**
 
@@ -53,7 +53,7 @@ Choose the bullets most relevant to the role you're applying for. All figures ar
 ### Data Science / ML Engineer Roles
 
 - Built end-to-end ML pipeline for AML alert prioritisation: feature engineering (24 features), leakage-safe temporal splits, two-phase LightGBM training, capacity-based threshold calibration; achieved AUC-ROC 0.979 and Recall@20% of 100% on held-out data
-- Designed capacity-based decision threshold (80th percentile of validation scores) operationalising a business constraint — "review top 20% of alerts" — rather than optimising F1; improved SAR detection rate from 20% (random) to 100% at same analyst capacity
+- Designed capacity-based decision threshold (80th percentile of validation scores) operationalising a business constraint  -  "review top 20% of alerts"  -  rather than optimising F1; improved SAR detection rate from 20% (random) to 100% at same analyst capacity
 - Implemented walk-forward validation across 3 expanding time windows; AUC-ROC stable at 0.978–0.981 demonstrating model temporal stability on synthetic data
 - Engineered PSI-based feature drift monitoring system detecting distribution shifts across 24 behavioural features with interpretable alert thresholds (PSI > 0.2 = investigate)
 
@@ -61,8 +61,8 @@ Choose the bullets most relevant to the role you're applying for. All figures ar
 
 - Built Starlette async REST API (9 endpoints) for AML investigation workflow; implemented `InvestigationRepository` ABC enabling production database swap from SQLite to PostgreSQL without route handler changes
 - Enforced temporal evidence integrity via SQL filter (`WHERE txn_date <= alert_date`) on transaction history endpoint; verified by 12 dedicated integration tests
-- Designed append-only investigation audit trail (notes, decisions, status transitions) with `true_sar` ground truth suppression — ground truth never exposed via any API endpoint
-- Implemented deterministic explainability signals from stored feature values (15 signals, 3 classification types: FACTUAL_EVIDENCE/MODEL_SIGNAL/HUMAN_DECISION) — no LLM dependency, fully reproducible
+- Designed append-only investigation audit trail (notes, decisions, status transitions) with `true_sar` ground truth suppression  -  ground truth never exposed via any API endpoint
+- Implemented deterministic explainability signals from stored feature values (15 signals, 3 classification types: FACTUAL_EVIDENCE/MODEL_SIGNAL/HUMAN_DECISION)  -  no LLM dependency, fully reproducible
 
 ### Full-Stack Engineer Roles
 
@@ -86,14 +86,14 @@ Choose the bullets most relevant to the role you're applying for. All figures ar
 
 ### Fintech / Compliance Technology Roles
 
-- Built AML alert triage engine enforcing regulatory-grade evidence standards: pre-alert transaction filtering, ground truth suppression, immutable audit trail, analyst-opaque scoring — architected to mirror production compliance requirements
-- Evaluated capacity-based alert prioritisation quantitatively: Recall@20% improved from 20.3% (random) to 100.0% (ML) on synthetic data, with severity baseline at 34.8% — demonstrating 2.9× improvement over the practical baseline
+- Built AML alert triage engine enforcing regulatory-grade evidence standards: pre-alert transaction filtering, ground truth suppression, immutable audit trail, analyst-opaque scoring  -  architected to mirror production compliance requirements
+- Evaluated capacity-based alert prioritisation quantitatively: Recall@20% improved from 20.3% (random) to 100.0% (ML) on synthetic data, with severity baseline at 34.8%  -  demonstrating 2.9× improvement over the practical baseline
 
 ---
 
 ## LinkedIn Summary (200 words)
 
-I'm a software engineer focused on applied ML and data engineering. My recent portfolio project is AlertIQ — an AML (Anti-Money Laundering) alert triage and investigation platform.
+I'm a software engineer focused on applied ML and data engineering. My recent portfolio project is AlertIQ  -  an AML (Anti-Money Laundering) alert triage and investigation platform.
 
 The core engineering challenge was building a system that investigates correctly: temporal evidence integrity (investigators only see pre-alert transactions), ground truth suppression (the model's label never leaked to analysts), deterministic explainability (no LLM, no black box), and an immutable audit trail. These constraints shaped the entire architecture.
 

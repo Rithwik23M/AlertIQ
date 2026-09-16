@@ -6,7 +6,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ---
 
-## [1.0.0] — 2026-09-13
+## [1.0.0]  -  2026-09-13
 
 First stable release. AlertIQ is an AML alert triage engine and investigation workspace built on synthetic transaction data.
 
@@ -16,13 +16,13 @@ First stable release. AlertIQ is an AML alert triage engine and investigation wo
 - Transaction simulator with 3,000 synthetic accounts across a 6-month window (Jan–Jul 2023)
 - 8 money-laundering typologies: structuring, cash-intensive business, professional ML, shell company layering, real estate, cross-border, trade-based, virtual assets
 - 55,896 synthetic alerts, 191,364 transactions; SHA-256 dataset fingerprinting (see DATA_PROVENANCE.md)
-- Dataset versioning policy — alerts.csv v3, transactions.csv v1
+- Dataset versioning policy  -  alerts.csv v3, transactions.csv v1
 
 **ML triage engine**
 - 24 behavioural features: velocity ratios, jurisdiction entropy, structuring indicators, PEP/adverse-media flags, round-number clustering
 - HistGradientBoostingClassifier (scikit-learn) with two-phase training: phase 1 early stopping on validation, phase 2 refit on train+val
 - Leakage-safe temporal splits: 60% train / 20% val / 20% holdout, strictly time-ordered
-- Capacity-based threshold: score at 80th percentile of validation scores — keeps exactly 20% of queue above threshold
+- Capacity-based threshold: score at 80th percentile of validation scores  -  keeps exactly 20% of queue above threshold
 - Holdout performance: AUC-ROC 0.979, Recall@20% 100%, F1 0.810
 - Walk-forward validation: 3 expanding windows, AUC-ROC stable at 0.978–0.981
 - Baseline comparisons: random (AUC 0.509) and severity-only (AUC 0.564) scorers
@@ -80,7 +80,7 @@ First stable release. AlertIQ is an AML alert triage engine and investigation wo
 - DEPLOYMENT.md, CI_CD.md, OPERATIONS_RUNBOOK.md
 - DEMO_SCRIPT.md, INTERVIEW_GUIDE.md, PORTFOLIO_DESCRIPTION.md, OWNER_HANDOVER.md
 - docs/README.md documentation index
-- docs/history/ — 8 milestone completion records (M1–M6.1)
+- docs/history/  -  8 milestone completion records (M1–M6.1)
 
 ### Changed
 
@@ -95,38 +95,38 @@ First stable release. AlertIQ is an AML alert triage engine and investigation wo
 
 ---
 
-## [0.6.1] — 2026-09-13 (internal milestone)
+## [0.6.1]  -  2026-09-13 (internal milestone)
 
 Temporal evidence integrity hardening. See [docs/MILESTONE_6_1_COMPLETION.md](docs/MILESTONE_6_1_COMPLETION.md).
 
-## [0.6.0] — 2026-09-13 (internal milestone)
+## [0.6.0]  -  2026-09-13 (internal milestone)
 
 SQLite investigation store, explainability signals, investigation workspace backend. See [docs/history/MILESTONE_6_COMPLETION.md](docs/history/MILESTONE_6_COMPLETION.md).
 
-## [0.5.1] — 2026-09-13 (internal milestone)
+## [0.5.1]  -  2026-09-13 (internal milestone)
 
 Next.js investigation workspace frontend. See [docs/history/MILESTONE_5_1_COMPLETION.md](docs/history/MILESTONE_5_1_COMPLETION.md).
 
-## [0.5.0] — 2026-09-13 (internal milestone)
+## [0.5.0]  -  2026-09-13 (internal milestone)
 
 Starlette serving layer with 9 REST endpoints. See [docs/history/MILESTONE_5_COMPLETION.md](docs/history/MILESTONE_5_COMPLETION.md).
 
-## [0.4.0] — 2026-09-13 (internal milestone)
+## [0.4.0]  -  2026-09-13 (internal milestone)
 
 Model registry and serialisation. See [docs/history/MILESTONE_4_COMPLETION.md](docs/history/MILESTONE_4_COMPLETION.md).
 
-## [0.3.0] — 2026-09-13 (internal milestone)
+## [0.3.0]  -  2026-09-13 (internal milestone)
 
 Robustness suite: walk-forward, PSI drift, calibration, stress. See [docs/history/MILESTONE_3_COMPLETION.md](docs/history/MILESTONE_3_COMPLETION.md).
 
-## [0.2.1] — 2026-09-13 (internal milestone)
+## [0.2.1]  -  2026-09-13 (internal milestone)
 
 Evaluation framework: Recall@K, capacity threshold, AUC-ROC vs. AUC-PR. See [docs/history/MILESTONE_2_1_COMPLETION.md](docs/history/MILESTONE_2_1_COMPLETION.md).
 
-## [0.2.0] — 2026-09-13 (internal milestone)
+## [0.2.0]  -  2026-09-13 (internal milestone)
 
 ML triage engine: 24 features, LightGBM, leakage-safe temporal splits. See [docs/history/MILESTONE_2_COMPLETION.md](docs/history/MILESTONE_2_COMPLETION.md).
 
-## [0.1.0] — 2026-09-13 (internal milestone)
+## [0.1.0]  -  2026-09-13 (internal milestone)
 
 Transaction simulator: 3,000 accounts, 8 typologies, SAR labelling. See [docs/history/MILESTONE_1_COMPLETION.md](docs/history/MILESTONE_1_COMPLETION.md).
