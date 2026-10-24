@@ -450,4 +450,4 @@ Performance figures (AUC-ROC 0.979, Recall@20% 100%) reflect model performance o
 
 ## Author
 
-Built by Rithwik Maramraju as part of the ApexForge Labs portfolio project series.
+Built by Rithwik Manjuanth as part of the ApexForge Labs portfolio project series.
