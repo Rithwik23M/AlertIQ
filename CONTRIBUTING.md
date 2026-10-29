@@ -16,8 +16,8 @@ Thank you for your interest in AlertIQ. This document explains how to set up a d
 
 ```bash
 # Clone and enter the repository
-git clone https://github.com/rithwikm7/alertiq.git
-cd alertiq
+git clone https://github.com/Rithwik23M/AlertIQ.git
+cd AlertIQ
 
 # Create and activate a virtual environment
 python -m venv .venv

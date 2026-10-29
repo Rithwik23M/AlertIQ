@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "alertiq"
 version = "1.0.0"
-description = "AML Alert Triage Engine — adaptive prioritisation using LightGBM and economic triage"
+description = "AML Alert Triage Engine — adaptive prioritisation using gradient boosting and economic triage"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

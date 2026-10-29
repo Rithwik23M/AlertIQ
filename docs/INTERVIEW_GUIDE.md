@@ -9,7 +9,7 @@ This guide prepares answers at three depths for the most likely technical and be
 ### What is AlertIQ?
 
 **30 seconds:**
-> "AlertIQ is an AML alert triage engine. Banks generate more money-laundering alerts than investigators can review. I built a LightGBM model that ranks alerts by SAR probability so investigators catch the most suspicious cases within their capacity limit. There's also a full investigation workspace  -  transaction history, explainability signals, note-taking, and audit-logged decisions."
+> "AlertIQ is an AML alert triage engine. Banks generate more money-laundering alerts than investigators can review. I built a gradient boosting model that ranks alerts by SAR probability so investigators catch the most suspicious cases within their capacity limit. There's also a full investigation workspace  -  transaction history, explainability signals, note-taking, and audit-logged decisions."
 
 **2 minutes:**
 > "AlertIQ has two parts. The ML triage engine scores every alert with a SAR probability using 24 behavioural features  -  velocity ratios, jurisdiction entropy, structuring indicators, PEP flags. Investigators work through the sorted queue and stop at their capacity limit. The key metric I designed around was Recall@K: if an investigator reviews the top 20% of alerts, what fraction of real SARs do they catch? On held-out data the model achieved 100%  -  compared to 20% for random and 35% for a severity-only baseline.

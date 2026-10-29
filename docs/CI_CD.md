@@ -1,6 +1,8 @@
 # AlertIQ  -  CI/CD Pipeline Reference
 
 AlertIQ uses GitHub Actions for automated testing, security scanning, and deployment.
+
+> **Current status:** the live workflow is `.github/workflows/ci.yml`, which runs the full test suite on every push and pull request to `main`. The lint, security-scan and deploy stages below are the designed pipeline and are not switched on yet.
 The pipeline is designed to be fail-fast, cheap to run, and safe for an AML compliance product.
 
 ---

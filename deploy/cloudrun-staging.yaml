@@ -70,7 +70,7 @@ spec:
 
     spec:
       # Maximum concurrent requests per container instance.
-      # LightGBM inference is CPU-bound; 4 concurrent requests per instance
+      # Model inference is CPU-bound; 4 concurrent requests per instance
       # avoids contention while keeping latency predictable.
       containerConcurrency: 4
 

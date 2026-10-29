@@ -40,7 +40,7 @@ FROM python:3.11-slim AS builder
 # Metadata
 LABEL org.opencontainers.image.title="AlertIQ Scoring API" \
       org.opencontainers.image.description="AML alert triage engine — relative risk prioritisation for analyst review" \
-      org.opencontainers.image.source="https://github.com/rithwikm7/alertiq"
+      org.opencontainers.image.source="https://github.com/Rithwik23M/AlertIQ"
 
 # System deps needed to compile scikit-learn / scipy wheels (if any are not
 # available as pre-built binaries from PyPI).

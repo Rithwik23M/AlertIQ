@@ -115,8 +115,11 @@ class TestDatasetProvenance:
     @needs_data
     def test_csv_sha256_matches_provenance(self):
         """Dataset fingerprint matches DATA_PROVENANCE.md."""
+        # The fingerprint was taken with CRLF line endings. Normalise so the
+        # check gives the same result on Windows and Linux checkouts.
         with open(ALERTS_CSV, "rb") as f:
-            sha = hashlib.sha256(f.read()).hexdigest()
+            raw = f.read().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+        sha = hashlib.sha256(raw).hexdigest()
         assert sha == _EXPECTED_SHA256, (
             f"Dataset SHA-256 mismatch.\n"
             f"  Got:      {sha}\n"

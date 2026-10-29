@@ -107,7 +107,7 @@ Open browser to `http://localhost:3000`
 
 **Q: Can I see the code?**
 
-> "Yes  -  the repository is at github.com/rithwikm7/alertiq. The ML training pipeline is in `src/alertiq/triage/`, the serving layer in `src/alertiq/serving/`, and the full test suite in `tests/`."
+> "Yes  -  the repository is at github.com/Rithwik23M/AlertIQ. The ML training pipeline is in `src/alertiq/triage/`, the serving layer in `src/alertiq/serving/`, and the full test suite in `tests/`."
 
 ---
 

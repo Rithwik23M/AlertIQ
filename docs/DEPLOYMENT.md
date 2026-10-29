@@ -410,7 +410,7 @@ AlertIQ uses **request-based billing** in both staging and production:
 - `minScale: "0"`  -  scale to zero when idle (no idle cost)
 - `cpu-throttling: "true"`  -  CPU allocated only during request processing
 
-**Cold-start trade-off:** The first request after the service goes idle incurs a cold start of approximately 3–10 seconds (container launch + ~1–3 s LightGBM artifact load). Subsequent requests within the same instance are warm. For a portfolio deployment with occasional traffic, this trade-off eliminates idle spend.
+**Cold-start trade-off:** The first request after the service goes idle incurs a cold start of approximately 3–10 seconds (container launch + ~1–3 s model artifact load). Subsequent requests within the same instance are warm. For a portfolio deployment with occasional traffic, this trade-off eliminates idle spend.
 
 **Instance cap:** `maxScale: "10"` limits parallel container instances. This is a soft limit  -  it caps autoscaling but is not a hard billing stop.
 

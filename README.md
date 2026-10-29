@@ -2,7 +2,7 @@
 
 **AML Alert Triage Engine  -  adaptive prioritisation for financial crime investigation**
 
-[![CI](https://github.com/rithwikm7/alertiq/actions/workflows/ci.yml/badge.svg)](https://github.com/rithwikm7/alertiq/actions/workflows/ci.yml)
+[![CI](https://github.com/Rithwik23M/AlertIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/Rithwik23M/AlertIQ/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -41,7 +41,7 @@ graph TB
 
     subgraph ML["ML Triage Engine"]
         FEAT[24 Behavioural Features<br/>velocity · jurisdiction · PEP flags<br/>structuring · typology indicators]
-        LGBM[LightGBM<br/>HistGradientBoosting<br/>v1.0.0 · AUC-ROC 0.979]
+        LGBM[Gradient boosting<br/>scikit-learn HistGradientBoosting<br/>v1.0.0 · AUC-ROC 0.979]
         THRESH[Capacity-Based Threshold<br/>score at 80th percentile<br/>of validation set]
     end
 
@@ -99,8 +99,8 @@ graph TB
     end
 
     subgraph CI["GitHub Actions"]
-        CI_TEST[CI Workflow<br/>pytest · ruff · mypy]
-        CD_FLOW[CD Workflow<br/>build → push → deploy]
+        CI_TEST[CI Workflow<br/>pytest on every push]
+        CD_FLOW[CD Workflow, planned<br/>build → push → deploy]
     end
 
     subgraph IaC["Infrastructure as Code"]
@@ -123,7 +123,7 @@ sequenceDiagram
     participant Queue as Alert Queue UI
     participant API as Starlette API
     participant Store as SQLite Store
-    participant Model as LightGBM Model
+    participant Model as Gradient Boosting Model
 
     Analyst->>Queue: Open investigation session
     Queue->>API: GET /alerts?sort=risk_score
@@ -233,8 +233,8 @@ The model is stable across the three training windows evaluated.
 ### Backend
 
 ```bash
-git clone https://github.com/rithwikm7/alertiq.git
-cd alertiq
+git clone https://github.com/Rithwik23M/AlertIQ.git
+cd AlertIQ
 
 # Create virtual environment
 python -m venv .venv
@@ -362,7 +362,7 @@ alertiq/
 | Frontend | Next.js 14, TypeScript, Recharts | Type-safe; server components; chart support |
 | Container | Docker | Reproducible builds; Cloud Run deployment |
 | IaC | Terraform | Declarative Cloud Run + IAM configuration |
-| CI/CD | GitHub Actions | Automated test, lint, build, and deploy pipeline |
+| CI | GitHub Actions | Test suite runs on every push and pull request |
 | Cloud | Google Cloud Run | Serverless; auto-scaling; pay-per-use |
 
 ---
@@ -417,7 +417,7 @@ Performance figures (AUC-ROC 0.979, Recall@20% 100%) reflect model performance o
 | Milestone | Deliverable |
 |---|---|
 | M1 | Transaction simulator  -  3,000 accounts, 8 ML typologies, realistic SAR labelling |
-| M2 | Triage engine  -  24 features, LightGBM, leakage-safe temporal splits, baseline comparisons |
+| M2 | Triage engine  -  24 features, gradient boosting (scikit-learn), leakage-safe temporal splits, baseline comparisons |
 | M2.1 | Evaluation framework  -  Recall@K, capacity-based threshold, AUC-ROC vs. AUC-PR distinction |
 | M3 | Robustness suite  -  walk-forward validation, PSI drift, calibration, stress testing |
 | M4 | Model registry + serialisation  -  versioned joblib, SHA-256 verification, champion/challenger |

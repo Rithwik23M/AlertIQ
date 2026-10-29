@@ -125,7 +125,7 @@ Evaluation framework: Recall@K, capacity threshold, AUC-ROC vs. AUC-PR. See [doc
 
 ## [0.2.0]  -  2026-09-13 (internal milestone)
 
-ML triage engine: 24 features, LightGBM, leakage-safe temporal splits. See [docs/history/MILESTONE_2_COMPLETION.md](docs/history/MILESTONE_2_COMPLETION.md).
+ML triage engine: 24 features, gradient boosting (scikit-learn), leakage-safe temporal splits. See [docs/history/MILESTONE_2_COMPLETION.md](docs/history/MILESTONE_2_COMPLETION.md).
 
 ## [0.1.0]  -  2026-09-13 (internal milestone)
 

@@ -43,7 +43,7 @@
 #   • cpu-throttling: "true"         — CPU allocated only during request
 #
 # This means the first request after idle incurs a COLD START: ~3–10 s while
-# the container launches and the LightGBM artifact (~1–3 s) loads.
+# the container launches and the model artifact (~1–3 s) loads.
 #
 # Trade-off table:
 #   Policy               Cost at idle    Cold-start penalty
@@ -124,7 +124,7 @@ spec:
 
     spec:
       # Production: 8 concurrent requests per instance.
-      # LightGBM inference is stateless; multiple simultaneous requests are
+      # Model inference is stateless; multiple simultaneous requests are
       # safe.  Higher concurrency than staging reduces cold-start frequency
       # under burst traffic.
       containerConcurrency: 8
@@ -143,7 +143,7 @@ spec:
 
           # ── Resource allocation ───────────────────────────────────── #
           # Production: 1 CPU / 512 Mi — same as staging.
-          # LightGBM inference is single-threaded per request; a second vCPU
+          # Model inference is single-threaded per request; a second vCPU
           # adds no throughput and doubles compute cost.  Horizontal scaling
           # (maxScale: "10") handles burst traffic.
           resources:
